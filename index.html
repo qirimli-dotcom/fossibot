@@ -32,7 +32,7 @@ a{color:inherit;text-decoration:none}
 .hdr{position:sticky;top:0;z-index:40;background:rgba(23,27,31,.92);backdrop-filter:blur(10px);border-bottom:1px solid #0d1013}
 .hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
 .brand{display:flex;align-items:center;gap:10px;color:#fff}
-.brand .logo{height:26px;width:auto;display:block}
+.brand .logo{height:36px;width:auto;display:block}
 .nav{display:flex;gap:26px;align-items:center}
 .nav a{color:#c4ccd1;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .18s}
 .nav a:hover{color:#fff}
@@ -130,7 +130,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .price .pv{font-family:'Saira',sans-serif;font-weight:700;font-size:24px;color:var(--ink);line-height:1}
 .price .pn{display:block;font-size:11px;color:var(--muted2);letter-spacing:.03em;margin-top:3px}
 .price.empty .pv{font-size:17px;font-weight:600;color:var(--muted)}
-.note-card{grid-column:1/-1;font-size:12px;color:var(--muted);background:var(--panel2);border-top:1px solid var(--line2);padding:9px 26px}
+.note-card{font-size:12.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 13px;margin-bottom:14px}
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 
 /* about */
@@ -149,7 +149,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 /* footer */
 .foot{background:var(--ink);color:#aab3b9}
 .foot .wrap{padding:44px 22px;display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
-.foot .brand .logo{height:25px}
+.foot .brand .logo{height:32px}
 .foot .col h4{font-family:'Saira';text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:#6f787e;margin:0 0 10px;font-weight:600}
 .foot .col p{margin:0 0 6px;font-size:13.5px;line-height:1.5}
 .foot a:hover{color:var(--lime)}
@@ -176,7 +176,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   .nav.open{display:flex;position:absolute;top:60px;left:0;right:0;flex-direction:column;gap:0;background:var(--graphite);padding:8px 22px 16px;border-bottom:1px solid #0d1013}
   .nav.open a{padding:11px 0;border-bottom:1px solid #2c333a;width:100%}
   .nav.open .cta{margin-top:10px;text-align:center;border-bottom:0}
-  .brand .logo{height:22px}
+  .brand .logo{height:30px}
   .stat{padding-right:22px;margin-right:20px}
   .tools{margin-left:0;width:100%}
   .search{flex:1}.search input{width:100%}
@@ -226,6 +226,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
         <input id="search" type="search" placeholder="Поиск модели…" aria-label="Поиск">
       </label>
       <select class="sort" id="sort" aria-label="Сортировка">
+        <option value="cat">Порядок каталога</option>
         <option value="cap">По ёмкости ↓</option>
         <option value="pow">По мощности ↓</option>
         <option value="name">По названию A–Z</option>
@@ -437,25 +438,26 @@ function cardHTML(p){
           <dl class="params">${paramsHTML(p)}</dl>
         </div>
       </div>
+      ${note}
       <div class="pfoot">
         ${priceHTML(p)}
         <a class="btn btn-lime btn-sm" href="${mail}">Запросить цену</a>
       </div>
     </div>
-    ${note}
   </article>`;
 }
 
-let curCat='all', curSort='cap', curQ='';
+let curCat='all', curSort='cat', curQ='';
 function render(){
   let list = P.filter(p=> (curCat==='all'||p.cat===curCat));
   if(curQ){ const q=curQ.toLowerCase();
     list=list.filter(p=> p.name.toLowerCase().includes(q) || CATS[p.cat].toLowerCase().includes(q)); }
-  const powV=p=>p.pow||p.watt||0, capV=p=>p.wh||(p.watt?p.watt*10:0);
+  const powV=p=>p.pow||p.watt||0, capV=p=>p.wh||(p.watt?p.watt*10:0), ord=p=>P.indexOf(p);
   list.sort((a,b)=>{
     if(curSort==='name') return a.name.localeCompare(b.name);
     if(curSort==='pow')  return powV(b)-powV(a);
-    return capV(b)-capV(a);
+    if(curSort==='cap')  return capV(b)-capV(a);
+    return ord(a)-ord(b);            // 'cat' — порядок как в каталоге (PDF)
   });
   const g=document.getElementById('grid');
   g.innerHTML = list.length ? list.map(cardHTML).join('')
