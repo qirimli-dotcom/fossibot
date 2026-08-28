@@ -72,6 +72,8 @@ a{color:inherit;text-decoration:none}
 .stat .k{font-size:12px;color:#8a949b;letter-spacing:.05em;text-transform:uppercase;margin-top:2px}
 
 /* controls */
+.jump-anchor{position:relative;scroll-margin-top:60px}
+.cat-wrap{position:relative}
 .controls{position:sticky;top:60px;z-index:30;background:rgba(236,239,241,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .controls .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 22px}
 .filters{display:flex;gap:8px;flex-wrap:wrap}
@@ -306,7 +308,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   </div>
 </section>
 
-<div class="controls" id="catalog">
+<div id="catalog" class="jump-anchor"></div>
+<section class="cat-wrap">
+<div class="controls">
   <div class="wrap">
     <div class="filters" id="filters"></div>
   </div>
@@ -315,6 +319,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 <main class="catalog">
   <div class="wrap"><div class="grid" id="grid"></div></div>
 </main>
+</section>
 
 <section class="about" id="about">
   <div class="wrap">
@@ -374,6 +379,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   </div>
 </div>
 <script>
+if('scrollRestoration' in history) history.scrollRestoration='manual';
 const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg"};
 
 /* ============================================================
@@ -572,7 +578,18 @@ function buildFilters(){
 }
 const nav=document.getElementById('nav');
 document.getElementById('burger').onclick=()=>nav.classList.toggle('open');
-nav.querySelectorAll('a').forEach(a=>a.onclick=()=>nav.classList.remove('open'));
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    const id=this.getAttribute('href').slice(1);
+    if(!id) return;                       // '#' (корзина) — свой обработчик
+    const el=document.getElementById(id);
+    if(!el) return;
+    e.preventDefault();
+    if(nav) nav.classList.remove('open');
+    const y=el.getBoundingClientRect().top + window.pageYOffset - 66;
+    window.scrollTo({top: y<0?0:y, behavior:'smooth'});
+  });
+});
 
 /* ---------------- Корзина ---------------- */
 let cart = {};   // корзина живёт только в рамках сессии — при F5 обнуляется
@@ -680,6 +697,10 @@ function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)retu
 })();
 
 buildFilters(); render(); updateCart();
+window.addEventListener('load', function(){
+  if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
+  window.scrollTo(0,0);
+});
 </script>
 </body>
 </html>
