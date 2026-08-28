@@ -333,6 +333,14 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   <div class="bottom"><div class="wrap">© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться.</div></div>
 </footer>
 
+<div id="printArea"></div>
+<div class="cart-overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-label="Корзина">
+  <aside class="cart-drawer" id="cartDrawer">
+    <div class="cart-head"><h3>Корзина</h3><button class="cart-x" id="cartX" aria-label="Закрыть">✕</button></div>
+    <div class="cart-body" id="cartBody"></div>
+    <div class="cart-foot" id="cartFoot"></div>
+  </aside>
+</div>
 <script>
 const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg"};
 
@@ -535,11 +543,16 @@ document.getElementById('burger').onclick=()=>nav.classList.toggle('open');
 nav.querySelectorAll('a').forEach(a=>a.onclick=()=>nav.classList.remove('open'));
 
 /* ---------------- Корзина ---------------- */
-let cart = {};
-try { cart = JSON.parse(localStorage.getItem('fb_cart') || '{}'); } catch(e){ cart = {}; }
-function saveCart(){ try{ localStorage.setItem('fb_cart', JSON.stringify(cart)); }catch(e){} }
+let cart = {};   // корзина живёт только в рамках сессии — при F5 обнуляется
+function saveCart(){}   // намеренно не сохраняем: корзина сбрасывается при обновлении
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
-function addToCart(id){ cart[id] = (cart[id]||0) + 1; saveCart(); updateCart(); openCart(); }
+function addToCart(id){
+  const p = P.find(x=>x.id===id);
+  let q = prompt('Сколько штук добавить?\n'+ (p? 'FOSSiBOT '+p.name : ''), '1');
+  if(q === null) return;                 // отмена
+  q = parseInt(q); if(!q || q < 1) q = 1;
+  cart[id] = (cart[id]||0) + q; updateCart(); openCart();
+}
 function setQty(id,q){ if(q<=0) delete cart[id]; else cart[id]=q; saveCart(); updateCart(); }
 function clearCart(){ cart = {}; saveCart(); updateCart(); }
 function makePDF(){
@@ -618,13 +631,5 @@ function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)retu
 
 buildFilters(); render(); updateCart();
 </script>
-<div id="printArea"></div>
-<div class="cart-overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-label="Корзина">
-  <aside class="cart-drawer" id="cartDrawer">
-    <div class="cart-head"><h3>Корзина</h3><button class="cart-x" id="cartX" aria-label="Закрыть">✕</button></div>
-    <div class="cart-body" id="cartBody"></div>
-    <div class="cart-foot" id="cartFoot"></div>
-  </aside>
-</div>
 </body>
 </html>
