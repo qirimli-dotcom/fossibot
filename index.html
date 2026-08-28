@@ -93,29 +93,31 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .spread::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--lime);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:2}
 .spread:hover{box-shadow:var(--shadow-lg);border-color:#cdd5da}
 .spread:hover::before{transform:scaleX(1)}
-.life{position:relative;flex:0 0 45%;min-height:340px;background:#dfe5e8;overflow:hidden}
+.life{position:relative;flex:0 0 44%;min-height:225px;background:#dfe5e8;overflow:hidden}
 .life img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .tag{position:absolute;top:13px;left:13px;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;
   text-transform:uppercase;background:rgba(21,24,27,.82);color:#fff;padding:5px 10px;border-radius:6px;backdrop-filter:blur(2px)}
 .tag.exp{top:auto;bottom:13px;left:13px;background:var(--lime);color:var(--lime-ink);font-weight:700}
-.info{padding:24px 28px 20px;flex:1;display:flex;flex-direction:column;min-width:0}
-.info-head{margin-bottom:16px;padding-bottom:15px;border-bottom:1px solid var(--line)}
-.info h3{font-family:'Saira',sans-serif;font-weight:700;font-size:29px;margin:0 0 5px;letter-spacing:.01em;line-height:1.02}
+.info{padding:20px 26px 16px;flex:1;min-width:0}
+.info-head{margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.info-head::after{content:"";display:table;clear:both}
+.title-row{display:flex;justify-content:space-between;align-items:baseline;gap:18px;margin-bottom:7px}
+.info h3{font-family:'Saira',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;line-height:1.02;min-width:0}
 .psub{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted)}
 .psub b{color:var(--ink);font-weight:700}
-.info-cols{display:flex;margin-bottom:16px}
+.info-cols{display:flex;margin-bottom:12px}
 .prod-col{flex:0 0 168px;padding-right:22px;border-right:1px solid var(--line);text-align:center;display:flex;flex-direction:column}
-.prod-col > img{max-width:100%;max-height:150px;object-fit:contain;filter:drop-shadow(0 10px 16px rgba(20,30,40,.22))}
-.rc{margin-top:16px}
+.prod-col > img{max-width:100%;max-height:120px;object-fit:contain;filter:drop-shadow(0 10px 16px rgba(20,30,40,.22))}
+.rc{margin-top:12px}
 .rc-t{display:block;font-family:'Saira';font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
 .rc-box{border:1px solid var(--line);border-radius:9px;padding:9px 8px;background:var(--panel2)}
-.rc-box img{max-width:100%;max-height:58px;object-fit:contain;display:block;margin:0 auto}
+.rc-box img{max-width:100%;max-height:48px;object-fit:contain;display:block;margin:0 auto}
 .rc-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);margin-top:5px}
 .param-col{flex:1;padding-left:24px;min-width:0}
 .pp-h{font-family:'Saira',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
 /* parameter list */
 .params{margin:0 0 14px;padding:0}
-.prow{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:8px 0;border-top:1px solid var(--line2);align-items:start}
+.prow{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:6px 0;border-top:1px solid var(--line2);align-items:start}
 .prow:first-child{border-top:0}
 .prow dt{font-family:'Saira',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:2px}
 .prow dd{margin:0;font-size:13.5px;color:var(--ink);line-height:1.5}
@@ -126,10 +128,11 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:6px;margin:0 4px 3px 0}
 .wifi-y{display:inline-block;background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0;font-size:11.5px;
   font-weight:600;padding:2px 9px;border-radius:6px}
-.pfoot{margin-top:auto;padding-top:15px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.price .pv{font-family:'Saira',sans-serif;font-weight:700;font-size:24px;color:var(--ink);line-height:1}
-.price .pn{display:block;font-size:11px;color:var(--muted2);letter-spacing:.03em;margin-top:3px}
-.price.empty .pv{font-size:17px;font-weight:600;color:var(--muted)}
+.pfoot{margin-top:auto;padding-top:13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.price{flex:none;text-align:right;white-space:nowrap}
+.price .pv{font-family:'Saira',sans-serif;font-weight:700;font-size:20px;color:var(--ink);line-height:1.1}
+.price .pn{display:block;font-size:11px;color:var(--muted2);letter-spacing:.03em;margin-top:2px}
+.price.empty .pv{font-size:15px;font-weight:600;color:var(--muted)}
 .note-card{font-size:12.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 13px;margin-bottom:14px}
 .empty{text-align:center;padding:60px 20px;color:var(--muted)}
 
@@ -162,6 +165,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 }
 @media (max-width:820px){.about .lead-row{grid-template-columns:1fr;gap:28px}}
 @media (max-width:520px){
+  .price{margin-left:12px}
   .info-cols{flex-direction:column;gap:16px}
   .prod-col{padding-right:0;border-right:0;border-bottom:1px solid var(--line);padding-bottom:16px;flex-direction:row;gap:14px;align-items:center;text-align:left}
   .prod-col > img{max-height:96px;flex:none;width:120px}
@@ -376,7 +380,7 @@ const P = [
 function priceHTML(p){
   const v = (PRICES[p.id]||'').toString().trim();
   if(v) return `<div class="price"><span class="pv">${v} ${CUR}</span><span class="pn">${PRICE_NOTE}</span></div>`;
-  return `<div class="price empty"><span class="pv">Цена по запросу</span></div>`;
+  return '';
 }
 function paramsHTML(p){
   const li = a => a.map(x=>`<span class="li">${x}</span>`).join('');
@@ -418,14 +422,16 @@ function cardHTML(p){
   else if(!p.pow)      sub = `${p.whLbl} · доп. батарея`;
   else if(p.whMax)     sub = `<b>${p.pow} Вт</b> / до ${p.whMax.toLocaleString('ru-RU')} Втч`;
   else                 sub = `<b>${p.pow} Вт</b> / ${p.whLbl}`;
-  const mail = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent('Запрос цены: FOSSiBOT '+p.name)}`;
   const note = p.note? `<div class="note-card">${p.note}</div>`:'';
   const life = IMG['life_'+p.id] || IMG[p.img] || '';
   return `<article class="spread" data-id="${p.id}">
     <div class="life"><img src="${life}" alt="FOSSiBOT ${p.name}" loading="lazy"></div>
     <div class="info">
       <div class="info-head">
-        <h3>FOSSiBOT ${p.name}</h3>
+        <div class="title-row">
+          <h3>FOSSiBOT ${p.name}</h3>
+          ${priceHTML(p)}
+        </div>
         <div class="psub">${sub}</div>
       </div>
       <div class="info-cols">
@@ -439,10 +445,6 @@ function cardHTML(p){
         </div>
       </div>
       ${note}
-      <div class="pfoot">
-        ${priceHTML(p)}
-        <a class="btn btn-lime btn-sm" href="${mail}">Запросить цену</a>
-      </div>
     </div>
   </article>`;
 }
