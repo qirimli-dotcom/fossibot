@@ -36,7 +36,9 @@ a{color:inherit;text-decoration:none}
 .nav{display:flex;gap:26px;align-items:center}
 .nav a{color:#c4ccd1;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .18s}
 .nav a:hover{color:#fff}
-.nav .cta{color:var(--ink);background:var(--lime);padding:8px 16px;border-radius:8px;font-weight:600}
+.nav .cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
+.nav .cta .ico{flex:none}
+.nav .cta.cta-icon{padding:9px 11px}
 .nav .cta:hover{color:var(--ink);filter:brightness(1.06)}
 .burger{display:none;background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
 
@@ -101,7 +103,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .info{padding:20px 26px 16px;flex:1;min-width:0}
 .info-head{margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .info-head::after{content:"";display:table;clear:both}
-.title-row{display:flex;justify-content:space-between;align-items:baseline;gap:18px;margin-bottom:7px}
+.title-row{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:7px}
 .info h3{font-family:'Saira',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;line-height:1.02;min-width:0}
 .psub{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted)}
 .psub b{color:var(--ink);font-weight:700}
@@ -130,7 +132,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   font-weight:600;padding:2px 9px;border-radius:6px}
 .pfoot{margin-top:auto;padding-top:13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .price{flex:none;text-align:right;white-space:nowrap}
-.price .pv{font-family:'Saira',sans-serif;font-weight:700;font-size:20px;color:var(--ink);line-height:1.1}
+.price .pv{display:inline-block;background:var(--lime);color:var(--ink);border-radius:8px;padding:5px 13px;font-family:'Saira',sans-serif;font-weight:700;font-size:17px;line-height:1.15;white-space:nowrap}
 .price .pn{display:block;font-size:11px;color:var(--muted2);letter-spacing:.03em;margin-top:2px}
 .price.empty .pv{font-size:15px;font-weight:600;color:var(--muted)}
 .note-card{font-size:12.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 13px;margin-bottom:14px}
@@ -197,7 +199,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
       <a href="#catalog">Каталог</a>
       <a href="#about">О бренде</a>
       <a href="#contacts">Контакты</a>
-      <a class="cta" href="#contacts">Запросить прайс</a>
+      <a class="cta cta-icon" href="#contacts" aria-label="Корзина / запросить прайс" title="Запросить прайс"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg></a>
     </nav>
     <button class="burger" id="burger" aria-label="Меню">☰</button>
   </div>
@@ -205,9 +207,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 
 <section class="hero" id="top">
   <div class="wrap">
-    <div class="eyebrow">Официальный каталог · FOSSiBOT Power · 2026</div>
-    <h1>Автономная энергия <em>LiFePO4</em> — от повербанка до дома</h1>
-    <p class="lead">Портативные электростанции, домашние накопители и складные солнечные панели FOSSiBOT. Ёмкость от 288 Втч до 15 360 Втч, мощность до 7200 Вт. Оптовые поставки для дилеров, интернет-магазинов и монтажников.</p>
+    <div class="eyebrow">Оптовый каталог · FOSSiBOT Power · 2026</div>
+    <h1>Свет и заряд <em>без розетки</em> — от кемпинга до целого дома</h1>
+    <p class="lead">Полная линейка FOSSiBOT на аккумуляторах LiFePO4: портативные электростанции, домашние накопители и складные солнечные панели. От 288 Втч до 15 кВт·ч и мощностью до 7200 Вт — от зарядки гаджетов на выезде до питания дома при отключении света. Поставки только оптом: дилерам, интернет-магазинам и монтажным бригадам.</p>
     <div class="actions">
       <a class="btn btn-lime" href="#catalog">Смотреть каталог</a>
       <a class="btn btn-ghost" href="#about">О производителе</a>
@@ -292,10 +294,10 @@ const IMG = {"f1200": "data:image/webp;base64,UklGRqwnAABXRUJQVlA4WAoAAAAQAAAAUQ
    ============================================================ */
 const CUR = '₽';
 const PRICES = {
-  fdc300:'', f800:'', f1200:'', f1800:'', f2400:'', f3000:'',
-  f3600l:'', f3600pro:'', fb3840:'', f7200:'',
-  fbp1200:'', fbp2000:'', fbp3600:'', fbp3600pro:'',
-  sp200:'', sp200plus:'', sp420:''
+  fdc300:'0,00', f800:'0,00', f1200:'0,00', f1800:'0,00', f2400:'0,00', f3000:'0,00',
+  f3600l:'0,00', f3600pro:'0,00', fb3840:'0,00', f7200:'0,00',
+  fbp1200:'0,00', fbp2000:'0,00', fbp3600:'0,00', fbp3600pro:'0,00',
+  sp200:'0,00', sp200plus:'0,00', sp420:'0,00'
 };
 const PRICE_NOTE = 'оптовая цена'; // подпись под ценой
 const ORDER_EMAIL = 'opt@your-company.com';
@@ -379,8 +381,8 @@ const P = [
 
 function priceHTML(p){
   const v = (PRICES[p.id]||'').toString().trim();
-  if(v) return `<div class="price"><span class="pv">${v} ${CUR}</span><span class="pn">${PRICE_NOTE}</span></div>`;
-  return '';
+  if(!v) return '';
+  return `<div class="price"><span class="pv">${v} ${CUR}</span></div>`;
 }
 function paramsHTML(p){
   const li = a => a.map(x=>`<span class="li">${x}</span>`).join('');
