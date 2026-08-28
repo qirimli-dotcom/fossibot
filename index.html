@@ -228,18 +228,6 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 <div class="controls" id="catalog">
   <div class="wrap">
     <div class="filters" id="filters"></div>
-    <div class="tools">
-      <label class="search">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-        <input id="search" type="search" placeholder="Поиск модели…" aria-label="Поиск">
-      </label>
-      <select class="sort" id="sort" aria-label="Сортировка">
-        <option value="cat">Порядок каталога</option>
-        <option value="cap">По ёмкости ↓</option>
-        <option value="pow">По мощности ↓</option>
-        <option value="name">По названию A–Z</option>
-      </select>
-    </div>
   </div>
 </div>
 
@@ -479,8 +467,6 @@ function buildFilters(){
     b.classList.add('on'); curCat=b.dataset.c; render();
   });
 }
-document.getElementById('search').addEventListener('input',e=>{curQ=e.target.value;render();});
-document.getElementById('sort').addEventListener('change',e=>{curSort=e.target.value;render();});
 const nav=document.getElementById('nav');
 document.getElementById('burger').onclick=()=>nav.classList.toggle('open');
 nav.querySelectorAll('a').forEach(a=>a.onclick=()=>nav.classList.remove('open'));
