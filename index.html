@@ -380,7 +380,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 </div>
 <script>
 if('scrollRestoration' in history) history.scrollRestoration='manual';
-const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg"};
+const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg"};
 
 /* ============================================================
    ЦЕНЫ. Впиши оптовые цены сюда — по одной строке на модель.
@@ -392,12 +392,14 @@ const PRICES = {
   fdc300:'16 367', f800:'44 188', f1200:'62 200', f1800:'57 286', f2400:'98 204', f3000:'98 204',
   f3600l:'0,00', f3600pro:'180 023', fb3840:'150 557', f7200:'294 575',
   fbp1200:'91 646', fbp2000:'152 202', fbp3600:'229 106', fbp3600pro:'294 575',
-  sp200:'24 551', sp200plus:'26 195', sp420:'45 833'
+  sp200:'24 551', sp200plus:'26 195', sp420:'45 833',
+  fac580:'21 281', microinverter800:'21 281', foldcart:'6 558',
+  mcxt90_5:'4 101', mcxt90_10:'4 914', mcxt60_5:'3 289', mcxt60_10:'4 101'
 };
 const PRICE_NOTE = 'оптовая цена'; // подпись под ценой
 const ORDER_EMAIL = 'info@it-trade.com.ru';
 
-const CATS = {portable:'Портативные станции', home:'Домашние системы (ESS)', solar:'Солнечные панели'};
+const CATS = {portable:'Портативные станции', home:'Домашние системы (ESS)', solar:'Солнечные панели', accessory:'Аксессуары'};
 
 const P = [
   {id:'fdc300', cat:'portable', name:'FDC300', img:'fdc300', pow:328, wh:288, whLbl:'288 Втч', type:'LiFePO4',
@@ -472,6 +474,14 @@ const P = [
   {id:'sp420', cat:'solar', name:'SP420', img:'sp420', watt:420,
    solar:{Imp:'13,1 А',Isc:'15,7 А',Vmp:'32 В',VOC:'38,4 В'}, weight:'13,97 кг',
    dimsF:'1036 × 550 мм (сложено)', dimsU:'1036 × 2231 мм (разложено)'},
+
+  {id:'fac580', cat:'accessory', name:'FAC580', img:'placeholder', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
+  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'placeholder', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
+  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'placeholder', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
+  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
 ];
 
 function priceHTML(p){
@@ -483,7 +493,10 @@ function paramsHTML(p){
   const li = a => a.map(x=>`<span class="li">${x}</span>`).join('');
   const row = (k,v)=>`<div class="prow"><dt>${k}</dt><dd>${v}</dd></div>`;
   let r='';
-  if(p.cat==='solar'){
+  if(p.cat==='accessory'){
+    r+=row('Совместимость', p.compat);
+    if(p.desc) r+=row('Особенности', p.desc);
+  } else if(p.cat==='solar'){
     r+=row('Мощность', `<span class="mono">${p.watt} Вт</span>`);
     r+=row('Vmp / VOC', `<span class="mono">${p.solar.Vmp} / ${p.solar.VOC}</span>`);
     r+=row('Imp / Isc', `<span class="mono">${p.solar.Imp} / ${p.solar.Isc}</span>`);
@@ -515,18 +528,20 @@ function recBox(p){
 }
 function cardHTML(p){
   let sub;
-  if(p.cat==='solar') sub = `<b>${p.watt} Вт</b> · солнечная панель`;
+  if(p.cat==='accessory') sub = p.stype;
+  else if(p.cat==='solar') sub = `<b>${p.watt} Вт</b> · солнечная панель`;
   else if(!p.pow)      sub = `${p.whLbl} · доп. батарея`;
   else if(p.whMax)     sub = `<b>${p.pow} Вт</b> / до ${p.whMax.toLocaleString('ru-RU')} Втч`;
   else                 sub = `<b>${p.pow} Вт</b> / ${p.whLbl}`;
   const note = p.note? `<div class="note-card">${p.note}</div>`:'';
-  const life = IMG['life_'+p.id] || IMG[p.img] || '';
+  const life = p.cat==='accessory' ? (IMG['acc_life']||IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
+  const title = p.cat==='accessory' ? p.name : 'FOSSiBOT '+p.name;
   return `<article class="spread" data-id="${p.id}">
     <div class="life"><img src="${life}" alt="FOSSiBOT ${p.name}" loading="lazy"></div>
     <div class="info">
       <div class="info-head">
         <div class="title-row">
-          <h3>FOSSiBOT ${p.name}</h3>
+          <h3>${title}</h3>
           <div class="head-right">
             ${priceHTML(p)}
             <button class="add-cart" data-id="${p.id}" aria-label="В корзину" title="Добавить в корзину"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg></button>
@@ -568,7 +583,7 @@ function render(){
 }
 function buildFilters(){
   const counts={all:P.length}; Object.keys(CATS).forEach(c=>counts[c]=P.filter(p=>p.cat===c).length);
-  const defs=[['all','Все'],['portable',CATS.portable],['home',CATS.home],['solar',CATS.solar]];
+  const defs=[['all','Все']].concat(Object.keys(CATS).map(c=>[c,CATS[c]]));
   const f=document.getElementById('filters');
   f.innerHTML=defs.map(([k,l])=>`<button class="chip-f${k==='all'?' on':''}" data-c="${k}">${l}<span class="n">${counts[k]}</span></button>`).join('');
   f.querySelectorAll('.chip-f').forEach(b=>b.onclick=()=>{
