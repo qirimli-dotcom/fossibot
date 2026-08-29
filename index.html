@@ -36,10 +36,11 @@ a{color:inherit;text-decoration:none}
 .nav{display:flex;gap:26px;align-items:center}
 .nav a{color:#c4ccd1;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .18s}
 .nav a:hover{color:#fff}
-.nav .cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
-.nav .cta .ico{flex:none}
-.nav .cta.cta-icon{padding:9px 11px}
-.nav .cta:hover{color:var(--ink);filter:brightness(1.06)}
+.cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
+.cta .ico{flex:none}
+.cta.cta-icon{padding:9px 11px}
+.cta:hover{color:var(--ink);filter:brightness(1.06)}
+.hdr-right{display:flex;align-items:center;gap:22px}
 .burger{display:none;background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
 
 /* hero */
@@ -192,7 +193,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
 
 /* header cart badge */
-.nav .cta.cta-icon{position:relative}
+.cta.cta-icon{position:relative}
 .cart-count{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;display:none;align-items:center;justify-content:center;line-height:1}
 /* add-to-cart on card */
 .head-right{display:flex;align-items:center;gap:10px;flex:none}
@@ -281,13 +282,15 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 <header class="hdr">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="FOSSiBOT"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></a>
-    <nav class="nav" id="nav">
-      <a href="#catalog">Каталог</a>
-      <a href="#about">О бренде</a>
-      <a href="#contacts">Контакты</a>
+    <div class="hdr-right">
+      <nav class="nav" id="nav">
+        <a href="#catalog">Каталог</a>
+        <a href="#about">О бренде</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
       <a class="cta cta-icon" id="cartBtn" href="#" aria-label="Корзина" title="Корзина"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg><span class="cart-count" id="cartCount">0</span></a>
-    </nav>
-    <button class="burger" id="burger" aria-label="Меню">☰</button>
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+    </div>
   </div>
 </header>
 
