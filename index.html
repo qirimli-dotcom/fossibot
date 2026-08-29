@@ -276,6 +276,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .life.acc img{object-fit:contain;padding:28px}
 .info-cols.acc .param-col{padding-left:0}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 
@@ -637,20 +638,58 @@ function clearCart(){ cart = {}; saveCart(); updateCart(); }
 function makePDF(){
   const ids = Object.keys(cart); if(!ids.length) return;
   const d = new Date().toLocaleDateString('ru-RU');
-  const rows = ids.map((id,i)=>{
+  const W = 720, pad = 40, rowH = 30, headH = 92;
+  const H = headH + 26 + (ids.length+1)*rowH + 132;
+  const sc = 2;
+  const cv = document.createElement('canvas'); cv.width = W*sc; cv.height = H*sc;
+  const ctx = cv.getContext('2d'); ctx.scale(sc,sc);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#111'; ctx.font = '800 30px Arial, sans-serif'; ctx.fillText('FOSSiBOT', pad, 52);
+  ctx.textAlign = 'right'; ctx.font = '700 16px Arial, sans-serif'; ctx.fillText('Заявка на поставку', W-pad, 42);
+  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#666'; ctx.fillText('Дата: '+d, W-pad, 62);
+  ctx.textAlign = 'left';
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(pad, headH-10); ctx.lineTo(W-pad, headH-10); ctx.stroke();
+  const cN = pad+8, cM = pad+44, cS = pad+250, cQ = W-pad-34;
+  let y = headH + 18;
+  ctx.fillStyle = '#eeeeee'; ctx.fillRect(pad, y-18, W-2*pad, rowH);
+  ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif';
+  ctx.fillText('№', cN, y); ctx.fillText('Модель', cM, y); ctx.fillText('Характеристики', cS, y);
+  ctx.textAlign = 'center'; ctx.fillText('Кол-во', cQ, y); ctx.textAlign = 'left';
+  y += rowH;
+  ids.forEach((id,i)=>{
     const p = P.find(x=>x.id===id);
-    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.pow? p.pow+' Вт / '+p.whLbl : p.whLbl);
-    return `<tr><td>${i+1}</td><td>FOSSiBOT ${p.name}</td><td>${spec}</td><td class="c">${cart[id]}</td></tr>`;
-  }).join('');
-  const pa = document.getElementById('printArea');
-  pa.innerHTML = `<div class="pa-wrap">
-    <div class="pa-head"><div class="pa-logo">FOSSiBOT</div><div><div class="pa-title">Заявка на поставку</div><div class="pa-date">Дата: ${d}</div></div></div>
-    <table class="pa-table"><thead><tr><th>№</th><th>Модель</th><th>Характеристики</th><th class="c">Кол-во</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="pa-total">Позиций: ${ids.length} · всего ${cartCount()} шт</div>
-    <div class="pa-sign">Контактное лицо: ______________________  Телефон: ______________________</div>
-    <div class="pa-foot">Оптовый запрос FOSSiBOT · сформировано в онлайн-каталоге</div>
-  </div>`;
-  window.print();
+    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.cat==='accessory' ? (p.stype||'') : (p.pow? p.pow+' Вт / '+p.whLbl : p.whLbl));
+    ctx.fillStyle = '#111'; ctx.font = '400 13px Arial, sans-serif';
+    ctx.fillText(String(i+1), cN, y);
+    ctx.fillText('FOSSiBOT '+p.name, cM, y);
+    ctx.fillStyle = '#555'; ctx.fillText(spec.slice(0,40), cS, y);
+    ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(String(cart[id]), cQ, y); ctx.textAlign = 'left';
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, y+9); ctx.lineTo(W-pad, y+9); ctx.stroke();
+    y += rowH;
+  });
+  y += 16;
+  ctx.fillStyle = '#111'; ctx.font = '700 15px Arial, sans-serif';
+  ctx.fillText('Позиций: '+ids.length+'   ·   всего '+cartCount()+' шт', pad, y);
+  y += 42;
+  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#333';
+  ctx.fillText('Контактное лицо: ___________________    Телефон: ___________________', pad, y);
+  y += 30;
+  ctx.font = '400 10px Arial, sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText('Оптовый запрос FOSSiBOT · сформировано в онлайн-каталоге', pad, y);
+  const img = cv.toDataURL('image/png');
+  try{
+    if(window.jspdf && window.jspdf.jsPDF){
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({unit:'pt', format:'a4'});
+      const m = 24, iw = pdf.internal.pageSize.getWidth() - m*2, ih = iw*(H/W);
+      pdf.addImage(img, 'PNG', m, m, iw, ih);
+      pdf.save('FOSSiBOT_zayavka.pdf');
+      return;
+    }
+  }catch(e){}
+  const a = document.createElement('a'); a.href = img; a.download = 'FOSSiBOT_zayavka.png'; a.click();
 }
 function updateCart(){
   const n = cartCount();
@@ -684,8 +723,7 @@ function renderCartBody(){
   const mail = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent('Заявка FOSSiBOT')}&body=${encodeURIComponent(body_txt)}`;
   foot.innerHTML = `
     <div class="cart-total">Позиций: <b>${ids.length}</b> · всего <b>${cartCount()} шт</b></div>
-    <a class="btn btn-lime" href="${mail}">Отправить запрос</a>
-    <button class="btn btn-dark" id="cartPdf">Скачать PDF</button>
+    <button class="btn btn-lime" id="cartPdf">Скачать PDF</button>
     <button class="cart-clear" id="cartClear">Очистить корзину</button>`;
   const cc = document.getElementById('cartClear'); if(cc) cc.onclick = clearCart;
   const pf = document.getElementById('cartPdf'); if(pf) pf.onclick = makePDF;
