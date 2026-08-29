@@ -180,7 +180,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   .prow{grid-template-columns:104px 1fr;gap:10px}
 }
 @media (max-width:680px){
-  .hero{background-image:linear-gradient(158deg,#242b31 0%,#161a1e 100%);background-color:#161a1e}
+  .hero{background-image:linear-gradient(180deg,rgba(13,17,20,.78),rgba(13,17,20,.73)),url(img/hero_bg.jpg);background-position:center right}
+  .hero p.lead{color:#fff}
+  .hero-text{text-shadow:0 1px 14px rgba(0,0,0,.5)}
   .nav{display:none}
   .burger{display:block}
   .nav.open{display:flex;position:absolute;top:60px;left:0;right:0;flex-direction:column;gap:0;background:var(--graphite);padding:8px 22px 16px;border-bottom:1px solid #0d1013}
