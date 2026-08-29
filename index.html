@@ -271,6 +271,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .qty-actions .btn{flex:1;justify-content:center}
 .btn-line{background:var(--panel);border:1px solid var(--line);color:var(--ink)}
 .btn-line:hover{border-color:var(--muted2)}
+.life.acc{background:linear-gradient(157deg,var(--tile-a),var(--tile-b))}
+.life.acc img{object-fit:contain;padding:28px}
+.info-cols.acc .param-col{padding-left:0}
 </style>
 </head>
 <body>
@@ -380,7 +383,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 </div>
 <script>
 if('scrollRestoration' in history) history.scrollRestoration='manual';
-const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg"};
+const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg", "fac580": "img/aks/FAC580.jpg", "microinverter800": "img/aks/MicroInverter%20800W.png", "foldcart": "img/aks/Foldable%20Cart.png", "mcxt90_5": "img/aks/MC-XT%2090-5M.png", "mcxt90_10": "img/aks/MC-XT%2090-10M.png", "mcxt60_5": "img/aks/MC-XT%2060-5M.png", "mcxt60_10": "img/aks/MC-XT%2060-10M.jpg"};
 
 /* ============================================================
    ЦЕНЫ. Впиши оптовые цены сюда — по одной строке на модель.
@@ -475,13 +478,13 @@ const P = [
    solar:{Imp:'13,1 А',Isc:'15,7 А',Vmp:'32 В',VOC:'38,4 В'}, weight:'13,97 кг',
    dimsF:'1036 × 550 мм (сложено)', dimsU:'1036 × 2231 мм (разложено)'},
 
-  {id:'fac580', cat:'accessory', name:'FAC580', img:'placeholder', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
-  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'placeholder', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
-  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'placeholder', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
-  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
+  {id:'fac580', cat:'accessory', name:'FAC580', img:'fac580', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
+  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'microinverter800', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
+  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'foldcart', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
+  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'mcxt90_5', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'mcxt90_10', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'mcxt60_5', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'mcxt60_10', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
 ];
 
 function priceHTML(p){
@@ -534,10 +537,10 @@ function cardHTML(p){
   else if(p.whMax)     sub = `<b>${p.pow} Вт</b> / до ${p.whMax.toLocaleString('ru-RU')} Втч`;
   else                 sub = `<b>${p.pow} Вт</b> / ${p.whLbl}`;
   const note = p.note? `<div class="note-card">${p.note}</div>`:'';
-  const life = p.cat==='accessory' ? (IMG['acc_life']||IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
+  const life = p.cat==='accessory' ? (IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
   const title = p.cat==='accessory' ? p.name : 'FOSSiBOT '+p.name;
   return `<article class="spread" data-id="${p.id}">
-    <div class="life"><img src="${life}" alt="FOSSiBOT ${p.name}" loading="lazy"></div>
+    <div class="life${p.cat==='accessory'?' acc':''}"><img src="${life}" alt="${title}" loading="lazy"></div>
     <div class="info">
       <div class="info-head">
         <div class="title-row">
@@ -549,11 +552,11 @@ function cardHTML(p){
         </div>
         <div class="psub">${sub}</div>
       </div>
-      <div class="info-cols">
-        <div class="prod-col">
-          <img src="${IMG[p.img]||''}" alt="FOSSiBOT ${p.name}" loading="lazy">
+      <div class="info-cols${p.cat==='accessory'?' acc':''}">
+        ${p.cat==='accessory' ? '' : `<div class="prod-col">
+          <img src="${IMG[p.img]||''}" alt="${title}" loading="lazy">
           ${recBox(p)}
-        </div>
+        </div>`}
         <div class="param-col">
           <div class="pp-h">Характеристики</div>
           <dl class="params">${paramsHTML(p)}</dl>
