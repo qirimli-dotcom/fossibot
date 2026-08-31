@@ -984,7 +984,7 @@ function admRow(o){
     '<td><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
     '<td style="color:#8b959b">›</td></tr>';
   if(!open) return main;
-  const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+' <b>× '+it[1]+'</b></span><span class="mono" style="color:#5f6a72">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
+  const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+'<br><span style="color:#8b959b;font-size:12px">'+fmtN(it[2])+' ₽ × '+it[1]+' шт</span></span><span class="mono" style="color:#15181b;font-weight:600;white-space:nowrap">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
   const sel='<select class="adm-st" data-id="'+o.id+'">'+Object.keys(ST).map(sx=>'<option value="'+sx+'" '+(sx===o.status?'selected':'')+'>'+ST[sx]+'</option>').join('')+'</select>';
   const tel=(o.phone||'').replace(/[^0-9+]/g,'');
   const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
