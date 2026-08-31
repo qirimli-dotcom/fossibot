@@ -883,6 +883,10 @@ const Store = {
     if(_sb){ await _sb.from('orders').update({status}).eq('id', id); return; }
     const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.status=status; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
   },
+  async remove(id){
+    if(_sb){ await _sb.from('orders').delete().eq('id', id); return; }
+    const a = Store._l().filter(x=>String(x.id)!==String(id)); try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){}
+  },
   _l(){ try{ return JSON.parse(localStorage.getItem('fb_orders')||'[]'); }catch(e){ return []; } }
 };
 /* демо-заказы в локальном режиме, чтобы админка не была пустой */
@@ -954,6 +958,7 @@ function admRender(){
   body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="6" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
   body.querySelectorAll('.adm-order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button'))return; admOpen=admOpen===tr.dataset.id?null:tr.dataset.id; admRender(); });
   body.querySelectorAll('.adm-st').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id, sel.value); const o=ADM.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; admRender(); });
+  body.querySelectorAll('.adm-del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ADM=ADM.filter(o=>String(o.id)!==b.dataset.id); admOpen=null; admRender(); });
 }
 function admRow(o){
   const open=admOpen===String(o.id);
@@ -975,6 +980,7 @@ function admRow(o){
       '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
       '<div><span class="l">Комментарий</span>'+(o.comment||'—')+'</div>'+
       '<div><span class="l">Статус</span>'+sel+'</div>'+
+      '<div style="margin-top:12px"><button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить заказ</button></div>'+
     '</div></div></td></tr>';
 }
 
