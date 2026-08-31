@@ -338,6 +338,21 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .adm-side>div{margin-bottom:10px;font-size:14px}
 .adm-side .l{display:block;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .adm-st{font:inherit;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#fff;cursor:pointer}
+.adm-margin{border-top:1px solid var(--line);padding:16px 20px;background:#fff}
+.mm-h{font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.mm-t{width:100%;border-collapse:collapse;margin-bottom:12px}
+.mm-t th{background:var(--panel2);text-align:right;font-family:'Saira';font-weight:600;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+.mm-t th.l{text-align:left}
+.mm-t td{padding:8px 10px;border-bottom:1px solid var(--line2);text-align:right;font-family:'JetBrains Mono';font-size:12.5px}
+.mm-t td.l{text-align:left;font-family:'Inter';font-weight:600}
+.mm-inp{width:92px;text-align:right;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:'JetBrains Mono';font-weight:600;font-size:12.5px;outline:none}
+.mm-inp:focus{border-color:var(--lime2);background:#fcfef0}
+.mm-p.pos{color:#1c7a44;font-weight:700}.mm-p.neg{color:#c0392b;font-weight:700}
+.mm-costs{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:13px;color:var(--muted)}
+.mm-costs label{display:flex;align-items:center;gap:8px}
+.mm-sum{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:14px;display:flex;gap:20px;flex-wrap:wrap}
+.mm-sum b{font-family:'JetBrains Mono'}
+.mm-sum .pos,.mm-profit.pos{color:#1c7a44}.mm-sum .neg,.mm-profit.neg{color:#c0392b}
 .foot-admin{color:#6a7278;text-decoration:underline;cursor:pointer}
 .foot-admin:hover{color:var(--lime)}
 @media(max-width:700px){.adm-tiles{grid-template-columns:1fr 1fr}.adm-det{grid-template-columns:1fr}.adm-date{display:none}}
@@ -483,7 +498,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     <div class="adm-wrap">
       <div class="adm-tiles" id="admTiles"></div>
       <div class="adm-chips" id="admChips"></div>
-      <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
+      <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th style="text-align:right">Маржа</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
     </div>
   </div>
 </div>
@@ -887,6 +902,10 @@ const Store = {
     if(_sb){ await _sb.from('orders').update({discount}).eq('id', id); return; }
     const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.discount=discount; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
   },
+  async setCosts(id, patch){
+    if(_sb){ await _sb.from('orders').update(patch).eq('id', id); return; }
+    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ Object.assign(o, patch); try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
+  },
   async remove(id){
     if(_sb){ await _sb.from('orders').delete().eq('id', id); return; }
     const a = Store._l().filter(x=>String(x.id)!==String(id)); try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){}
@@ -947,6 +966,23 @@ function admLogin(){
 async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
 function admBase(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
 function admFinal(o){ const b=admBase(o); const d=o.discount||0; return Math.round(b*(1-d/100)); }
+function admCogs(o){ const buy=Array.isArray(o.buy)?o.buy:[]; let c=0; (o.items||[]).forEach((it,i)=>c+=(buy[i]||0)*it[1]); return c; }
+function admProfit(o){ return admFinal(o) - admCogs(o) - ((o.logi||0)+(o.other||0)); }
+function admMargin(o){ const buy=Array.isArray(o.buy)?o.buy:[]; if(!buy.length || !buy.some(b=>b>0)) return null; const rev=admFinal(o); return rev>0?(admProfit(o)/rev*100):0; }
+function admMarginCell(o){ const m=admMargin(o); if(m===null) return '<span style="color:#c6ccd0">—</span>'; return '<b style="color:'+(m>=0?'#1c7a44':'#c0392b')+'">'+m.toFixed(0)+'%</b>'; }
+window.mCalc=function(id){
+  const o=ADM.find(x=>String(x.id)===String(id)); if(!o) return; const items=o.items||[];
+  o.buy = items.map((it,i)=>{ const inp=document.getElementById('m-buy-'+id+'-'+i); return inp?(parseFloat(inp.value)||0):(Array.isArray(o.buy)?(o.buy[i]||0):0); });
+  const gl=document.getElementById('m-logi-'+id), go=document.getElementById('m-other-'+id);
+  o.logi=gl?(parseFloat(gl.value)||0):(o.logi||0); o.other=go?(parseFloat(go.value)||0):(o.other||0);
+  items.forEach((it,i)=>{ const b=o.buy[i]||0; const prof=(it[2]-b)*it[1]; const ps=document.getElementById('m-ip-'+id+'-'+i);
+    if(ps){ ps.textContent=(prof>=0?'+':'')+fmtN(prof)+' ₽'; ps.className='mm-p '+(prof>=0?'pos':'neg'); } });
+  const cg=document.getElementById('m-cogs-'+id); if(cg) cg.textContent=fmtN(admCogs(o))+' ₽';
+  const profit=admProfit(o), rev=admFinal(o), margin=rev>0?(profit/rev*100):0;
+  const pf=document.getElementById('m-profit-'+id); if(pf){ pf.textContent=(profit>=0?'+':'')+fmtN(profit)+' ₽'; pf.className='mm-profit '+(profit>=0?'pos':'neg'); }
+  const mg=document.getElementById('m-margin-'+id); if(mg){ mg.textContent=margin.toFixed(1)+'%'; mg.className=(profit>=0?'pos':'neg'); }
+};
+window.mSave=async function(id){ const o=ADM.find(x=>String(x.id)===String(id)); if(!o) return; try{ await Store.setCosts(id,{buy:o.buy||[],logi:o.logi||0,other:o.other||0}); }catch(e){} };
 function kpMail(o){
   const lines=(o.items||[]).map((it,i)=>(i+1)+'. '+it[0]+' — '+it[1]+' шт × '+fmtN(it[2])+' ₽ = '+fmtN(it[1]*it[2])+' ₽').join('\n');
   const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
@@ -968,11 +1004,12 @@ function admRender(){
   document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
   let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
   const body=document.getElementById('admRows');
-  body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="6" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
+  body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="7" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
   body.querySelectorAll('.adm-order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button'))return; admOpen=admOpen===tr.dataset.id?null:tr.dataset.id; admRender(); });
   body.querySelectorAll('.adm-st').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id, sel.value); const o=ADM.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; admRender(); });
   body.querySelectorAll('.adm-del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ADM=ADM.filter(o=>String(o.id)!==b.dataset.id); admOpen=null; admRender(); });
   body.querySelectorAll('.adm-disc').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id, v); const o=ADM.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; admRender(); }; });
+  if(admOpen){ try{ mCalc(admOpen); }catch(e){} }
 }
 function admRow(o){
   const open=admOpen===String(o.id);
@@ -981,6 +1018,7 @@ function admRow(o){
     '<td class="mono adm-date">'+admDate(o)+'</td>'+
     '<td><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
     '<td style="text-align:right;font-family:Saira;font-weight:700">'+fmtN(admFinal(o))+' ₽</td>'+
+    '<td style="text-align:right">'+admMarginCell(o)+'</td>'+
     '<td><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
     '<td style="color:#8b959b">›</td></tr>';
   if(!open) return main;
@@ -991,7 +1029,15 @@ function admRow(o){
   const totBlock='<div class="adm-tot"><span>Сумма</span><span>'+fmtN(base)+' ₽</span></div>'+
     (disc>0?'<div class="adm-tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(base-fin)+' ₽</span></div>':'')+
     '<div class="adm-tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
-  return main+'<tr class="adm-detail"><td colspan="6"><div class="adm-det">'+
+  const buy=Array.isArray(o.buy)?o.buy:[];
+  const mmRows=(o.items||[]).map((it,i)=>'<tr><td class="l">'+it[0]+'</td><td>'+fmtN(it[2])+'</td><td>'+it[1]+'</td><td><input class="mm-inp" id="m-buy-'+o.id+'-'+i+'" type="number" min="0" value="'+(buy[i]||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></td><td class="mm-p" id="m-ip-'+o.id+'-'+i+'">—</td></tr>').join('');
+  const marginSection='<div class="adm-margin"><div class="mm-h">Расчёт маржи · закупка и расходы</div>'+
+    '<table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table>'+
+    '<div class="mm-costs"><label>Логистика ₽ <input class="mm-inp" id="m-logi-'+o.id+'" type="number" min="0" value="'+(o.logi||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
+      '<label>Иные ₽ <input class="mm-inp" id="m-other-'+o.id+'" type="number" min="0" value="'+(o.other||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label></div>'+
+    '<div class="mm-sum"><span>Себестоимость <b id="m-cogs-'+o.id+'">—</b></span><span>Прибыль <b class="mm-profit" id="m-profit-'+o.id+'">—</b></span><span>Маржа <b id="m-margin-'+o.id+'">—</b></span></div>'+
+    '</div>';
+  return main+'<tr class="adm-detail"><td colspan="7"><div class="adm-det">'+
     '<div>'+items+totBlock+'</div>'+
     '<div class="adm-side">'+
       '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
@@ -1003,7 +1049,7 @@ function admRow(o){
         '<a class="btn btn-line" style="padding:8px 14px;font-size:13px" href="'+kpMail(o)+'">Отправить КП</a>'+
         '<button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить</button>'+
       '</div>'+
-    '</div></div></td></tr>';
+    '</div></div>'+marginSection+'</td></tr>';
 }
 
 /* ---- wiring ---- */
