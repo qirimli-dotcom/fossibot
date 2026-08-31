@@ -330,6 +330,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .adm-badge.new{background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0}.adm-badge.new::before{background:var(--lime2)}
 .adm-badge.work{background:#fdf1dc;color:#8a5b09;border:1px solid #f2dcae}.adm-badge.work::before{background:#e69a1a}
 .adm-badge.transit{background:#e6eefb;color:#1b4b8f;border:1px solid #c6d9f5}.adm-badge.transit::before{background:#2f6fd0}
+.adm-badge.avail{background:#e0f5f2;color:#0f6b60;border:1px solid #bce6df}.adm-badge.avail::before{background:#12a394}
 .adm-badge.done{background:#e2f5ea;color:#1c6e3f;border:1px solid #bfe6cd}.adm-badge.done::before{background:#2e9e5b}
 .adm-detail td{background:var(--panel2);padding:0}
 .adm-det{padding:16px 20px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
@@ -338,6 +339,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .adm-side>div{margin-bottom:10px;font-size:14px}
 .adm-side .l{display:block;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
 .adm-st{font:inherit;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#fff;cursor:pointer}
+.adm-rate{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Saira';font-weight:600;font-size:13px;box-shadow:var(--shadow)}
 .adm-margin{border-top:1px solid var(--line);padding:16px 20px;background:#fff}
 .mm-h{font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .mm-t{width:100%;border-collapse:collapse;margin-bottom:12px}
@@ -498,6 +500,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     <div class="adm-wrap">
       <div class="adm-tiles" id="admTiles"></div>
       <div class="adm-chips" id="admChips"></div>
+      <div class="adm-rate" id="admRate"></div>
       <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th style="text-align:right">Маржа</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
     </div>
   </div>
@@ -950,8 +953,9 @@ async function submitOrder(){
 
 /* ---- Админ ---- */
 const fmtN=n=>Number(n||0).toLocaleString('ru-RU');
-const ST={new:'Новый',work:'В работе',transit:'В пути',done:'Выдан'};
+const ST={new:'Новый',work:'В работе',avail:'Доступно к заказу',transit:'В пути',done:'Выдан'};
 let admFilter='all', admOpen=null, ADM=[];
+let RATE=12.5; try{ const _r=parseFloat(localStorage.getItem('fb_rate')); if(_r) RATE=_r; }catch(e){}
 function openAdmin(){ const o=document.getElementById('admOverlay'); o.classList.add('on'); document.body.style.overflow='hidden';
   document.getElementById('admLogin').style.display='flex'; document.getElementById('admApp').style.display='none';
   const pw=document.getElementById('admPass'); pw.value=''; setTimeout(()=>pw.focus(),40); }
@@ -966,7 +970,7 @@ function admLogin(){
 async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
 function admBase(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
 function admFinal(o){ const b=admBase(o); const d=o.discount||0; return Math.round(b*(1-d/100)); }
-function admCogs(o){ const buy=Array.isArray(o.buy)?o.buy:[]; let c=0; (o.items||[]).forEach((it,i)=>c+=(buy[i]||0)*it[1]); return c; }
+function admCogs(o){ const buy=Array.isArray(o.buy)?o.buy:[]; let c=0; (o.items||[]).forEach((it,i)=>c+=(buy[i]||0)*RATE*it[1]); return c; }
 function admProfit(o){ return admFinal(o) - admCogs(o) - ((o.logi||0)+(o.other||0)); }
 function admMargin(o){ const buy=Array.isArray(o.buy)?o.buy:[]; if(!buy.length || !buy.some(b=>b>0)) return null; const rev=admFinal(o); return rev>0?(admProfit(o)/rev*100):0; }
 function admMarginCell(o){ const m=admMargin(o); if(m===null) return '<span style="color:#c6ccd0">—</span>'; return '<b style="color:'+(m>=0?'#1c7a44':'#c0392b')+'">'+m.toFixed(0)+'%</b>'; }
@@ -975,7 +979,9 @@ window.mCalc=function(id){
   o.buy = items.map((it,i)=>{ const inp=document.getElementById('m-buy-'+id+'-'+i); return inp?(parseFloat(inp.value)||0):(Array.isArray(o.buy)?(o.buy[i]||0):0); });
   const gl=document.getElementById('m-logi-'+id), go=document.getElementById('m-other-'+id);
   o.logi=gl?(parseFloat(gl.value)||0):(o.logi||0); o.other=go?(parseFloat(go.value)||0):(o.other||0);
-  items.forEach((it,i)=>{ const b=o.buy[i]||0; const prof=(it[2]-b)*it[1]; const ps=document.getElementById('m-ip-'+id+'-'+i);
+  items.forEach((it,i)=>{ const b=o.buy[i]||0; const rub=b*RATE; const prof=(it[2]-rub)*it[1];
+    const rs=document.getElementById('m-rub-'+id+'-'+i); if(rs) rs.textContent=fmtN(rub)+' ₽';
+    const ps=document.getElementById('m-ip-'+id+'-'+i);
     if(ps){ ps.textContent=(prof>=0?'+':'')+fmtN(prof)+' ₽'; ps.className='mm-p '+(prof>=0?'pos':'neg'); } });
   const cg=document.getElementById('m-cogs-'+id); if(cg) cg.textContent=fmtN(admCogs(o))+' ₽';
   const profit=admProfit(o), rev=admFinal(o), margin=rev>0?(profit/rev*100):0;
@@ -992,16 +998,19 @@ function kpMail(o){
   return 'mailto:?subject='+encodeURIComponent('Коммерческое предложение FOSSiBOT')+'&body='+encodeURIComponent(body);
 }
 function admDate(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
-function admCounts(){ const c={all:ADM.length,new:0,work:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
+function admCounts(){ const c={all:ADM.length,new:0,work:0,avail:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
 function admRender(){
   const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admFinal(o),0);
   document.getElementById('admTiles').innerHTML =
     '<div class="adm-tile accent"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
     '<div class="adm-tile"><div class="v">'+ADM.length+'</div><div class="k">всего</div></div>'+
     '<div class="adm-tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
-  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['transit','В пути'],['done','Выданы']];
+  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы']];
   document.getElementById('admChips').innerHTML = defs.map(d=>'<button class="adm-chip'+(d[0]===admFilter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
   document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
+  const rw=document.getElementById('admRate');
+  if(rw){ rw.innerHTML='Курс ¥ → ₽: <input class="mm-inp" id="rateInp" type="number" step="0.01" min="0" value="'+RATE+'" style="width:90px"> <span style="font-family:Inter;font-weight:400;color:#8b959b;font-size:12px">закупочные цены вводятся в юанях, рубли считаются по курсу</span>';
+    const ri=document.getElementById('rateInp'); if(ri) ri.onchange=e=>{ RATE=parseFloat(e.target.value)||RATE; try{localStorage.setItem('fb_rate',RATE);}catch(_){} admRender(); }; }
   let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
   const body=document.getElementById('admRows');
   body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="7" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
@@ -1030,9 +1039,9 @@ function admRow(o){
     (disc>0?'<div class="adm-tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(base-fin)+' ₽</span></div>':'')+
     '<div class="adm-tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
   const buy=Array.isArray(o.buy)?o.buy:[];
-  const mmRows=(o.items||[]).map((it,i)=>'<tr><td class="l">'+it[0]+'</td><td>'+fmtN(it[2])+'</td><td>'+it[1]+'</td><td><input class="mm-inp" id="m-buy-'+o.id+'-'+i+'" type="number" min="0" value="'+(buy[i]||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></td><td class="mm-p" id="m-ip-'+o.id+'-'+i+'">—</td></tr>').join('');
+  const mmRows=(o.items||[]).map((it,i)=>'<tr><td class="l">'+it[0]+'</td><td>'+fmtN(it[2])+'</td><td>'+it[1]+'</td><td><input class="mm-inp" id="m-buy-'+o.id+'-'+i+'" type="number" min="0" step="0.01" value="'+(buy[i]||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></td><td class="mono" id="m-rub-'+o.id+'-'+i+'">—</td><td class="mm-p" id="m-ip-'+o.id+'-'+i+'">—</td></tr>').join('');
   const marginSection='<div class="adm-margin"><div class="mm-h">Расчёт маржи · закупка и расходы</div>'+
-    '<table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table>'+
+    '<table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ¥/шт</th><th>₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table>'+
     '<div class="mm-costs"><label>Логистика ₽ <input class="mm-inp" id="m-logi-'+o.id+'" type="number" min="0" value="'+(o.logi||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
       '<label>Иные ₽ <input class="mm-inp" id="m-other-'+o.id+'" type="number" min="0" value="'+(o.other||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label></div>'+
     '<div class="mm-sum"><span>Себестоимость <b id="m-cogs-'+o.id+'">—</b></span><span>Прибыль <b class="mm-profit" id="m-profit-'+o.id+'">—</b></span><span>Маржа <b id="m-margin-'+o.id+'">—</b></span></div>'+
