@@ -458,7 +458,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     <div class="co-body">
       <label>Ваше имя *</label><input id="coName" type="text" autocomplete="name">
       <label>Телефон *</label><input id="coPhone" type="tel" autocomplete="tel" placeholder="+7 / +995 …">
-      <label>Компания</label><input id="coCompany" type="text" autocomplete="organization">
+      <label>Компания *</label><input id="coCompany" type="text" autocomplete="organization">
       <label>Комментарий</label><textarea id="coComment" rows="2" placeholder="Пожелания, сроки…"></textarea>
       <div class="co-err" id="coErr"></div>
       <button class="btn btn-lime" id="coSubmit" style="width:100%;justify-content:center;margin-top:6px">Отправить заказ</button>
@@ -883,6 +883,10 @@ const Store = {
     if(_sb){ await _sb.from('orders').update({status}).eq('id', id); return; }
     const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.status=status; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
   },
+  async setDiscount(id, discount){
+    if(_sb){ await _sb.from('orders').update({discount}).eq('id', id); return; }
+    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.discount=discount; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
+  },
   async remove(id){
     if(_sb){ await _sb.from('orders').delete().eq('id', id); return; }
     const a = Store._l().filter(x=>String(x.id)!==String(id)); try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){}
@@ -908,7 +912,7 @@ async function submitOrder(){
   const g=id=>document.getElementById(id).value.trim();
   const name=g('coName'), phone=g('coPhone'), company=g('coCompany'), comment=g('coComment');
   const err=document.getElementById('coErr');
-  if(!name || !phone){ err.textContent='Укажите имя и телефон'; return; }
+  if(!name || !phone || !company){ err.textContent='Заполните имя, телефон и компанию'; return; }
   const items=Object.keys(cart).map(id=>{
     const p=P.find(x=>x.id===id);
     const price=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0;
@@ -941,11 +945,20 @@ function admLogin(){
   } else { document.getElementById('admLoginErr').textContent='Неверный пароль'; }
 }
 async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
-function admTotal(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
+function admBase(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
+function admFinal(o){ const b=admBase(o); const d=o.discount||0; return Math.round(b*(1-d/100)); }
+function kpMail(o){
+  const lines=(o.items||[]).map((it,i)=>(i+1)+'. '+it[0]+' — '+it[1]+' шт × '+fmtN(it[2])+' ₽ = '+fmtN(it[1]*it[2])+' ₽').join('\n');
+  const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
+  let body='Коммерческое предложение FOSSiBOT\n\nДля: '+(o.company||o.name||'')+'\n\n'+lines+'\n\nСумма: '+fmtN(base)+' ₽';
+  body += disc>0 ? ('\nСкидка '+disc+'%: −'+fmtN(base-fin)+' ₽\nИтого к оплате: '+fmtN(fin)+' ₽') : ('\nИтого: '+fmtN(fin)+' ₽');
+  body += '\n\nС уважением, FOSSiBOT';
+  return 'mailto:?subject='+encodeURIComponent('Коммерческое предложение FOSSiBOT')+'&body='+encodeURIComponent(body);
+}
 function admDate(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
 function admCounts(){ const c={all:ADM.length,new:0,work:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
 function admRender(){
-  const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admTotal(o),0);
+  const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admFinal(o),0);
   document.getElementById('admTiles').innerHTML =
     '<div class="adm-tile accent"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
     '<div class="adm-tile"><div class="v">'+ADM.length+'</div><div class="k">всего</div></div>'+
@@ -959,6 +972,7 @@ function admRender(){
   body.querySelectorAll('.adm-order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button'))return; admOpen=admOpen===tr.dataset.id?null:tr.dataset.id; admRender(); });
   body.querySelectorAll('.adm-st').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id, sel.value); const o=ADM.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; admRender(); });
   body.querySelectorAll('.adm-del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ADM=ADM.filter(o=>String(o.id)!==b.dataset.id); admOpen=null; admRender(); });
+  body.querySelectorAll('.adm-disc').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id, v); const o=ADM.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; admRender(); }; });
 }
 function admRow(o){
   const open=admOpen===String(o.id);
@@ -966,21 +980,29 @@ function admRow(o){
     '<td class="mono" style="font-weight:700">#'+o.id+'</td>'+
     '<td class="mono adm-date">'+admDate(o)+'</td>'+
     '<td><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
-    '<td style="text-align:right;font-family:Saira;font-weight:700">'+fmtN(admTotal(o))+' ₽</td>'+
+    '<td style="text-align:right;font-family:Saira;font-weight:700">'+fmtN(admFinal(o))+' ₽</td>'+
     '<td><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
     '<td style="color:#8b959b">›</td></tr>';
   if(!open) return main;
   const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+' <b>× '+it[1]+'</b></span><span class="mono" style="color:#5f6a72">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
   const sel='<select class="adm-st" data-id="'+o.id+'">'+Object.keys(ST).map(sx=>'<option value="'+sx+'" '+(sx===o.status?'selected':'')+'>'+ST[sx]+'</option>').join('')+'</select>';
   const tel=(o.phone||'').replace(/[^0-9+]/g,'');
+  const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
+  const totBlock='<div class="adm-tot"><span>Сумма</span><span>'+fmtN(base)+' ₽</span></div>'+
+    (disc>0?'<div class="adm-tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(base-fin)+' ₽</span></div>':'')+
+    '<div class="adm-tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
   return main+'<tr class="adm-detail"><td colspan="6"><div class="adm-det">'+
-    '<div>'+items+'<div class="adm-tot"><span>Итого</span><span>'+fmtN(admTotal(o))+' ₽</span></div></div>'+
+    '<div>'+items+totBlock+'</div>'+
     '<div class="adm-side">'+
       '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
       '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
       '<div><span class="l">Комментарий</span>'+(o.comment||'—')+'</div>'+
+      '<div><span class="l">Скидка на заказ</span><input class="adm-disc" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'" style="width:66px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font:inherit"> %</div>'+
       '<div><span class="l">Статус</span>'+sel+'</div>'+
-      '<div style="margin-top:12px"><button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить заказ</button></div>'+
+      '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'+
+        '<a class="btn btn-line" style="padding:8px 14px;font-size:13px" href="'+kpMail(o)+'">Отправить КП</a>'+
+        '<button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить</button>'+
+      '</div>'+
     '</div></div></td></tr>';
 }
 
