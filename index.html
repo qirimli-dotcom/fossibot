@@ -932,7 +932,7 @@ let admFilter='all', admOpen=null, ADM=[];
 function openAdmin(){ const o=document.getElementById('admOverlay'); o.classList.add('on'); document.body.style.overflow='hidden';
   document.getElementById('admLogin').style.display='flex'; document.getElementById('admApp').style.display='none';
   const pw=document.getElementById('admPass'); pw.value=''; setTimeout(()=>pw.focus(),40); }
-function closeAdmin(){ document.getElementById('admOverlay').classList.remove('on'); document.body.style.overflow=''; }
+function closeAdmin(){ document.getElementById('admOverlay').classList.remove('on'); document.body.style.overflow=''; if(location.hash==='#admin'){ try{ history.replaceState(null,'',location.pathname); }catch(e){} } }
 function admLogin(){
   if(document.getElementById('admPass').value===ADMIN_PASS){
     document.getElementById('admLogin').style.display='none';
@@ -1001,6 +1001,7 @@ function admRow(o){
 
 buildFilters(); render(); updateCart();
 window.addEventListener('load', function(){
+  if(location.hash === '#admin'){ if(typeof openAdmin==='function') openAdmin(); return; }
   if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
   window.scrollTo(0,0);
 });
