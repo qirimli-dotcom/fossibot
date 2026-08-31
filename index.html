@@ -36,10 +36,11 @@ a{color:inherit;text-decoration:none}
 .nav{display:flex;gap:26px;align-items:center}
 .nav a{color:#c4ccd1;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .18s}
 .nav a:hover{color:#fff}
-.nav .cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
-.nav .cta .ico{flex:none}
-.nav .cta.cta-icon{padding:9px 11px}
-.nav .cta:hover{color:var(--ink);filter:brightness(1.06)}
+.cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
+.cta .ico{flex:none}
+.cta.cta-icon{padding:9px 11px}
+.cta:hover{color:var(--ink);filter:brightness(1.06)}
+.hdr-right{display:flex;align-items:center;gap:22px}
 .burger{display:none;background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
 
 /* hero */
@@ -179,6 +180,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   .prow{grid-template-columns:104px 1fr;gap:10px}
 }
 @media (max-width:680px){
+  .hero{background-image:linear-gradient(180deg,rgba(13,17,20,.78),rgba(13,17,20,.73)),url(img/hero_bg.jpg);background-position:center right}
+  .hero p.lead{color:#fff}
+  .hero-text{text-shadow:0 1px 14px rgba(0,0,0,.5)}
   .nav{display:none}
   .burger{display:block}
   .nav.open{display:flex;position:absolute;top:60px;left:0;right:0;flex-direction:column;gap:0;background:var(--graphite);padding:8px 22px 16px;border-bottom:1px solid #0d1013}
@@ -192,7 +196,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
 
 /* header cart badge */
-.nav .cta.cta-icon{position:relative}
+.cta.cta-icon{position:relative}
 .cart-count{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;display:none;align-items:center;justify-content:center;line-height:1}
 /* add-to-cart on card */
 .head-right{display:flex;align-items:center;gap:10px;flex:none}
@@ -271,20 +275,90 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .qty-actions .btn{flex:1;justify-content:center}
 .btn-line{background:var(--panel);border:1px solid var(--line);color:var(--ink)}
 .btn-line:hover{border-color:var(--muted2)}
+.life.acc{background:linear-gradient(157deg,var(--tile-a),var(--tile-b))}
+.life.acc img{object-fit:contain;padding:28px}
+.info-cols.acc .param-col{padding-left:0}
+
+/* checkout modal */
+.co-overlay{position:fixed;inset:0;z-index:85;background:rgba(15,20,24,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px}
+.co-overlay.on{display:flex}
+.co-modal{background:#fff;border-radius:16px;width:400px;max-width:100%;box-shadow:var(--shadow-lg);overflow:hidden;animation:pop .2s ease}
+.co-head{background:var(--graphite);color:#fff;padding:16px 20px;font-family:'Saira';font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
+.co-x{background:#333b42;border:0;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px}
+.co-x:hover{background:var(--lime);color:var(--ink)}
+.co-body{padding:20px}
+.co-body label{display:block;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
+.co-body label:first-child{margin-top:0}
+.co-body input,.co-body textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:14px;outline:none;resize:vertical}
+.co-body input:focus,.co-body textarea:focus{border-color:var(--lime2)}
+.co-err{color:#c0392b;font-size:13px;margin-top:10px;min-height:16px}
+/* admin */
+.adm-overlay{position:fixed;inset:0;z-index:90;background:var(--steel);display:none;overflow-y:auto}
+.adm-overlay.on{display:block}
+.adm-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(120% 120% at 80% 0%,#2a3037,#171b1f)}
+.adm-login-card{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);width:340px;max-width:100%;overflow:hidden}
+.adm-login-head{background:var(--graphite);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.brand-mini{font-family:'Saira';font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:14px;color:#fff}
+.adm-login-body{padding:24px 22px}
+.adm-login-body label{display:block;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.adm-login-body input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px;outline:none}
+.adm-login-body input:focus{border-color:var(--lime2)}
+.adm-top{background:var(--graphite);color:#fff;position:sticky;top:0;z-index:5;padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
+.adm-top .btn-line{background:transparent;border-color:#454e56;color:#eef2f4}
+.adm-wrap{max-width:1120px;margin:0 auto;padding:22px}
+.adm-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.adm-tile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 18px;box-shadow:var(--shadow)}
+.adm-tile .v{font-family:'Saira';font-weight:700;font-size:24px;line-height:1}
+.adm-tile .k{font-size:12px;color:var(--muted);margin-top:6px}
+.adm-tile.accent{background:linear-gradient(150deg,#f3f8d6,#eaf3c0);border-color:#e0ec9f}
+.adm-tile.accent .v{color:var(--lime-ink)}
+.adm-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.adm-chip{font-family:'Saira';font-weight:600;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer}
+.adm-chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.adm-chip .n{opacity:.5;font-family:'JetBrains Mono';font-size:11px;margin-left:5px}
+.adm-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.adm-table{width:100%;border-collapse:collapse}
+.adm-table thead th{background:var(--panel2);text-align:left;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+.adm-table td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.adm-order{cursor:pointer}
+.adm-order:hover{background:#fafcfc}
+.adm-order.isnew td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
+.adm-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.adm-date{font-size:12px;color:var(--muted)}
+.adm-badge{display:inline-flex;align-items:center;gap:6px;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.03em;text-transform:uppercase;padding:5px 10px;border-radius:7px}
+.adm-badge::before{content:"";width:6px;height:6px;border-radius:50%}
+.adm-badge.new{background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0}.adm-badge.new::before{background:var(--lime2)}
+.adm-badge.work{background:#fdf1dc;color:#8a5b09;border:1px solid #f2dcae}.adm-badge.work::before{background:#e69a1a}
+.adm-badge.transit{background:#e6eefb;color:#1b4b8f;border:1px solid #c6d9f5}.adm-badge.transit::before{background:#2f6fd0}
+.adm-badge.done{background:#e2f5ea;color:#1c6e3f;border:1px solid #bfe6cd}.adm-badge.done::before{background:#2e9e5b}
+.adm-detail td{background:var(--panel2);padding:0}
+.adm-det{padding:16px 20px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
+.adm-item{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.adm-tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:2px solid var(--line);font-family:'Saira';font-weight:700}
+.adm-side>div{margin-bottom:10px;font-size:14px}
+.adm-side .l{display:block;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.adm-st{font:inherit;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#fff;cursor:pointer}
+.foot-admin{color:#6a7278;text-decoration:underline;cursor:pointer}
+.foot-admin:hover{color:var(--lime)}
+@media(max-width:700px){.adm-tiles{grid-template-columns:1fr 1fr}.adm-det{grid-template-columns:1fr}.adm-date{display:none}}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 <header class="hdr">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="FOSSiBOT"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></a>
-    <nav class="nav" id="nav">
-      <a href="#catalog">Каталог</a>
-      <a href="#about">О бренде</a>
-      <a href="#contacts">Контакты</a>
+    <div class="hdr-right">
+      <nav class="nav" id="nav">
+        <a href="#catalog">Каталог</a>
+        <a href="#about">О бренде</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
       <a class="cta cta-icon" id="cartBtn" href="#" aria-label="Корзина" title="Корзина"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg><span class="cart-count" id="cartCount">0</span></a>
-    </nav>
-    <button class="burger" id="burger" aria-label="Меню">☰</button>
+      <button class="burger" id="burger" aria-label="Меню">☰</button>
+    </div>
   </div>
 </header>
 
@@ -350,7 +424,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
       <p><a href="mailto:info@it-trade.com.ru?subject=Оптовый%20запрос%20FOSSiBOT">info@it-trade.com.ru</a></p>
     </div>
   </div>
-  <div class="bottom"><div class="wrap">© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться.</div></div>
+  <div class="bottom"><div class="wrap">© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться. · <a class="foot-admin" id="admLink" href="#admin">админ</a></div></div>
 </footer>
 
 <div id="printArea"></div>
@@ -378,9 +452,44 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     </div>
   </div>
 </div>
+<div class="co-overlay" id="coOverlay" role="dialog" aria-modal="true" aria-label="Оформление заказа">
+  <div class="co-modal">
+    <div class="co-head">Оформление заказа<button class="co-x" id="coX" aria-label="Закрыть">✕</button></div>
+    <div class="co-body">
+      <label>Ваше имя *</label><input id="coName" type="text" autocomplete="name">
+      <label>Телефон *</label><input id="coPhone" type="tel" autocomplete="tel" placeholder="+7 / +995 …">
+      <label>Компания</label><input id="coCompany" type="text" autocomplete="organization">
+      <label>Комментарий</label><textarea id="coComment" rows="2" placeholder="Пожелания, сроки…"></textarea>
+      <div class="co-err" id="coErr"></div>
+      <button class="btn btn-lime" id="coSubmit" style="width:100%;justify-content:center;margin-top:6px">Отправить заказ</button>
+    </div>
+  </div>
+</div>
+<div class="adm-overlay" id="admOverlay" role="dialog" aria-modal="true" aria-label="Админ">
+  <div class="adm-login" id="admLogin">
+    <div class="adm-login-card">
+      <div class="adm-login-head"><span class="brand-mini">FOSSiBOT · Админ</span><button class="co-x" id="admClose1">✕</button></div>
+      <div class="adm-login-body">
+        <label>Пароль</label>
+        <input id="admPass" type="password" placeholder="••••••••">
+        <div class="co-err" id="admLoginErr"></div>
+        <button class="btn btn-lime" id="admLoginBtn" style="width:100%;justify-content:center;margin-top:14px">Войти</button>
+      </div>
+    </div>
+  </div>
+  <div class="adm-app" id="admApp" style="display:none">
+    <div class="adm-top"><span class="brand-mini">FOSSiBOT · Панель заказов</span>
+      <span style="display:flex;gap:8px"><button class="btn btn-line" id="admReload">Обновить</button><button class="co-x" id="admClose2">✕</button></span></div>
+    <div class="adm-wrap">
+      <div class="adm-tiles" id="admTiles"></div>
+      <div class="adm-chips" id="admChips"></div>
+      <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
+    </div>
+  </div>
+</div>
 <script>
 if('scrollRestoration' in history) history.scrollRestoration='manual';
-const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg"};
+const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg", "fac580": "img/aks/FAC580.jpg", "microinverter800": "img/aks/MicroInverter%20800W.png", "foldcart": "img/aks/Foldable%20Cart.png", "mcxt90_5": "img/aks/MC-XT%2090-5M.png", "mcxt90_10": "img/aks/MC-XT%2090-10M.png", "mcxt60_5": "img/aks/MC-XT%2060-5M.png", "mcxt60_10": "img/aks/MC-XT%2060-10M.jpg"};
 
 /* ============================================================
    ЦЕНЫ. Впиши оптовые цены сюда — по одной строке на модель.
@@ -475,13 +584,13 @@ const P = [
    solar:{Imp:'13,1 А',Isc:'15,7 А',Vmp:'32 В',VOC:'38,4 В'}, weight:'13,97 кг',
    dimsF:'1036 × 550 мм (сложено)', dimsU:'1036 × 2231 мм (разложено)'},
 
-  {id:'fac580', cat:'accessory', name:'FAC580', img:'placeholder', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
-  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'placeholder', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
-  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'placeholder', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
-  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'placeholder', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'placeholder', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
+  {id:'fac580', cat:'accessory', name:'FAC580', img:'fac580', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
+  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'microinverter800', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
+  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'foldcart', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
+  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'mcxt90_5', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'mcxt90_10', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'mcxt60_5', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
+  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'mcxt60_10', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
 ];
 
 function priceHTML(p){
@@ -534,10 +643,10 @@ function cardHTML(p){
   else if(p.whMax)     sub = `<b>${p.pow} Вт</b> / до ${p.whMax.toLocaleString('ru-RU')} Втч`;
   else                 sub = `<b>${p.pow} Вт</b> / ${p.whLbl}`;
   const note = p.note? `<div class="note-card">${p.note}</div>`:'';
-  const life = p.cat==='accessory' ? (IMG['acc_life']||IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
+  const life = p.cat==='accessory' ? (IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
   const title = p.cat==='accessory' ? p.name : 'FOSSiBOT '+p.name;
   return `<article class="spread" data-id="${p.id}">
-    <div class="life"><img src="${life}" alt="FOSSiBOT ${p.name}" loading="lazy"></div>
+    <div class="life${p.cat==='accessory'?' acc':''}"><img src="${life}" alt="${title}" loading="lazy"></div>
     <div class="info">
       <div class="info-head">
         <div class="title-row">
@@ -549,11 +658,11 @@ function cardHTML(p){
         </div>
         <div class="psub">${sub}</div>
       </div>
-      <div class="info-cols">
-        <div class="prod-col">
-          <img src="${IMG[p.img]||''}" alt="FOSSiBOT ${p.name}" loading="lazy">
+      <div class="info-cols${p.cat==='accessory'?' acc':''}">
+        ${p.cat==='accessory' ? '' : `<div class="prod-col">
+          <img src="${IMG[p.img]||''}" alt="${title}" loading="lazy">
           ${recBox(p)}
-        </div>
+        </div>`}
         <div class="param-col">
           <div class="pp-h">Характеристики</div>
           <dl class="params">${paramsHTML(p)}</dl>
@@ -631,20 +740,58 @@ function clearCart(){ cart = {}; saveCart(); updateCart(); }
 function makePDF(){
   const ids = Object.keys(cart); if(!ids.length) return;
   const d = new Date().toLocaleDateString('ru-RU');
-  const rows = ids.map((id,i)=>{
+  const W = 720, pad = 40, rowH = 30, headH = 92;
+  const H = headH + 26 + (ids.length+1)*rowH + 132;
+  const sc = 2;
+  const cv = document.createElement('canvas'); cv.width = W*sc; cv.height = H*sc;
+  const ctx = cv.getContext('2d'); ctx.scale(sc,sc);
+  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillStyle = '#111'; ctx.font = '800 30px Arial, sans-serif'; ctx.fillText('FOSSiBOT', pad, 52);
+  ctx.textAlign = 'right'; ctx.font = '700 16px Arial, sans-serif'; ctx.fillText('Заявка на поставку', W-pad, 42);
+  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#666'; ctx.fillText('Дата: '+d, W-pad, 62);
+  ctx.textAlign = 'left';
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(pad, headH-10); ctx.lineTo(W-pad, headH-10); ctx.stroke();
+  const cN = pad+8, cM = pad+44, cS = pad+250, cQ = W-pad-34;
+  let y = headH + 18;
+  ctx.fillStyle = '#eeeeee'; ctx.fillRect(pad, y-18, W-2*pad, rowH);
+  ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif';
+  ctx.fillText('№', cN, y); ctx.fillText('Модель', cM, y); ctx.fillText('Характеристики', cS, y);
+  ctx.textAlign = 'center'; ctx.fillText('Кол-во', cQ, y); ctx.textAlign = 'left';
+  y += rowH;
+  ids.forEach((id,i)=>{
     const p = P.find(x=>x.id===id);
-    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.pow? p.pow+' Вт / '+p.whLbl : p.whLbl);
-    return `<tr><td>${i+1}</td><td>FOSSiBOT ${p.name}</td><td>${spec}</td><td class="c">${cart[id]}</td></tr>`;
-  }).join('');
-  const pa = document.getElementById('printArea');
-  pa.innerHTML = `<div class="pa-wrap">
-    <div class="pa-head"><div class="pa-logo">FOSSiBOT</div><div><div class="pa-title">Заявка на поставку</div><div class="pa-date">Дата: ${d}</div></div></div>
-    <table class="pa-table"><thead><tr><th>№</th><th>Модель</th><th>Характеристики</th><th class="c">Кол-во</th></tr></thead><tbody>${rows}</tbody></table>
-    <div class="pa-total">Позиций: ${ids.length} · всего ${cartCount()} шт</div>
-    <div class="pa-sign">Контактное лицо: ______________________  Телефон: ______________________</div>
-    <div class="pa-foot">Оптовый запрос FOSSiBOT · сформировано в онлайн-каталоге</div>
-  </div>`;
-  window.print();
+    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.cat==='accessory' ? (p.stype||'') : (p.pow? p.pow+' Вт / '+p.whLbl : p.whLbl));
+    ctx.fillStyle = '#111'; ctx.font = '400 13px Arial, sans-serif';
+    ctx.fillText(String(i+1), cN, y);
+    ctx.fillText('FOSSiBOT '+p.name, cM, y);
+    ctx.fillStyle = '#555'; ctx.fillText(spec.slice(0,40), cS, y);
+    ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(String(cart[id]), cQ, y); ctx.textAlign = 'left';
+    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, y+9); ctx.lineTo(W-pad, y+9); ctx.stroke();
+    y += rowH;
+  });
+  y += 16;
+  ctx.fillStyle = '#111'; ctx.font = '700 15px Arial, sans-serif';
+  ctx.fillText('Позиций: '+ids.length+'   ·   всего '+cartCount()+' шт', pad, y);
+  y += 42;
+  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#333';
+  ctx.fillText('Контактное лицо: ___________________    Телефон: ___________________', pad, y);
+  y += 30;
+  ctx.font = '400 10px Arial, sans-serif'; ctx.fillStyle = '#999';
+  ctx.fillText('Оптовый запрос FOSSiBOT · сформировано в онлайн-каталоге', pad, y);
+  const img = cv.toDataURL('image/png');
+  try{
+    if(window.jspdf && window.jspdf.jsPDF){
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF({unit:'pt', format:'a4'});
+      const m = 24, iw = pdf.internal.pageSize.getWidth() - m*2, ih = iw*(H/W);
+      pdf.addImage(img, 'PNG', m, m, iw, ih);
+      pdf.save('FOSSiBOT_zayavka.pdf');
+      return;
+    }
+  }catch(e){}
+  const a = document.createElement('a'); a.href = img; a.download = 'FOSSiBOT_zayavka.png'; a.click();
 }
 function updateCart(){
   const n = cartCount();
@@ -678,11 +825,12 @@ function renderCartBody(){
   const mail = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent('Заявка FOSSiBOT')}&body=${encodeURIComponent(body_txt)}`;
   foot.innerHTML = `
     <div class="cart-total">Позиций: <b>${ids.length}</b> · всего <b>${cartCount()} шт</b></div>
-    <a class="btn btn-lime" href="${mail}">Отправить запрос</a>
-    <button class="btn btn-dark" id="cartPdf">Скачать PDF</button>
+    <button class="btn btn-lime" id="cartOrder">Оформить заказ</button>
+    <button class="btn btn-line" id="cartPdf">Скачать PDF</button>
     <button class="cart-clear" id="cartClear">Очистить корзину</button>`;
   const cc = document.getElementById('cartClear'); if(cc) cc.onclick = clearCart;
   const pf = document.getElementById('cartPdf'); if(pf) pf.onclick = makePDF;
+  const co = document.getElementById('cartOrder'); if(co) co.onclick = openCheckout;
 }
 function openCart(){ const o=document.getElementById('cartOverlay'); if(!o)return; o.classList.add('on'); document.body.style.overflow='hidden'; renderCartBody(); }
 function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)return; o.classList.remove('on'); document.body.style.overflow=''; }
@@ -711,8 +859,149 @@ function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)retu
   if(qi) qi.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirmQty(); } });
 })();
 
+
+/* ================= ЗАКАЗЫ + АДМИН ================= */
+/* --- Настройки: заполни для «живого» режима через Supabase --- */
+const SUPABASE_URL = '';                 // ← URL проекта Supabase (пока пусто = локальный режим)
+const SUPABASE_KEY = '';                 // ← anon public key
+const ADMIN_PASS   = 'fossibot';         // ← ПАРОЛЬ В АДМИНКУ (обязательно поменяй)
+
+let _sb = null;
+try{ if(SUPABASE_URL && SUPABASE_KEY && window.supabase){ _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } }catch(e){}
+
+const Store = {
+  async add(o){
+    if(_sb){ const r = await _sb.from('orders').insert(o).select().single(); if(r.error) throw r.error; return r.data; }
+    const a = Store._l(); o.id = Date.now()%1000000; o.created_at = new Date().toISOString(); a.unshift(o);
+    try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){} return o;
+  },
+  async list(){
+    if(_sb){ const r = await _sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; return r.data||[]; }
+    return Store._l();
+  },
+  async setStatus(id,status){
+    if(_sb){ await _sb.from('orders').update({status}).eq('id', id); return; }
+    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.status=status; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
+  },
+  async remove(id){
+    if(_sb){ await _sb.from('orders').delete().eq('id', id); return; }
+    const a = Store._l().filter(x=>String(x.id)!==String(id)); try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){}
+  },
+  _l(){ try{ return JSON.parse(localStorage.getItem('fb_orders')||'[]'); }catch(e){ return []; } }
+};
+/* демо-заказы в локальном режиме, чтобы админка не была пустой */
+if(!_sb){ try{ if(!localStorage.getItem('fb_orders')){ localStorage.setItem('fb_orders', JSON.stringify([
+  {id:1041,created_at:new Date(Date.now()-3600e3).toISOString(),status:'new',name:'Ирина К.',phone:'+7 978 402-15-09',company:'СветоТорг',comment:'',items:[['FOSSiBOT F800',10,44188],['FOSSiBOT SP200',10,24551]],total:686390},
+  {id:1040,created_at:new Date(Date.now()-8*3600e3).toISOString(),status:'work',name:'Гоча Берадзе',phone:'+995 599 10-77-42',company:'BatumiRent',comment:'Оплата по счёту',items:[['FOSSiBOT FBP3600 Pro',3,294575]],total:883725}
+])); } }catch(e){} }
+
+/* ---- Оформление заказа ---- */
+function openCheckout(){
+  if(!Object.keys(cart).length) return;
+  const err=document.getElementById('coErr'); if(err) err.textContent='';
+  closeCart();
+  document.getElementById('coOverlay').classList.add('on');
+  setTimeout(()=>{ const n=document.getElementById('coName'); if(n) n.focus(); }, 40);
+}
+function closeCheckout(){ document.getElementById('coOverlay').classList.remove('on'); }
+async function submitOrder(){
+  const g=id=>document.getElementById(id).value.trim();
+  const name=g('coName'), phone=g('coPhone'), company=g('coCompany'), comment=g('coComment');
+  const err=document.getElementById('coErr');
+  if(!name || !phone){ err.textContent='Укажите имя и телефон'; return; }
+  const items=Object.keys(cart).map(id=>{
+    const p=P.find(x=>x.id===id);
+    const price=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0;
+    return [ (p.cat==='accessory'?p.name:'FOSSiBOT '+p.name), cart[id], price ];
+  });
+  const total=items.reduce((sm,it)=>sm+it[1]*it[2],0);
+  const order={name,phone,company,comment,items,total,status:'new'};
+  const btn=document.getElementById('coSubmit'); btn.disabled=true; btn.textContent='Отправляем…';
+  try{
+    const saved=await Store.add(order);
+    closeCheckout(); clearCart();
+    alert('Заказ отправлен! Номер: #'+(saved.id||'—')+'\nМы свяжемся с вами.');
+  }catch(e){ err.textContent='Не удалось отправить. Попробуйте ещё раз.'; }
+  btn.disabled=false; btn.textContent='Отправить заказ';
+}
+
+/* ---- Админ ---- */
+const fmtN=n=>Number(n||0).toLocaleString('ru-RU');
+const ST={new:'Новый',work:'В работе',transit:'В пути',done:'Выдан'};
+let admFilter='all', admOpen=null, ADM=[];
+function openAdmin(){ const o=document.getElementById('admOverlay'); o.classList.add('on'); document.body.style.overflow='hidden';
+  document.getElementById('admLogin').style.display='flex'; document.getElementById('admApp').style.display='none';
+  const pw=document.getElementById('admPass'); pw.value=''; setTimeout(()=>pw.focus(),40); }
+function closeAdmin(){ document.getElementById('admOverlay').classList.remove('on'); document.body.style.overflow=''; if(location.hash==='#admin'){ try{ history.replaceState(null,'',location.pathname); }catch(e){} } }
+function admLogin(){
+  if(document.getElementById('admPass').value===ADMIN_PASS){
+    document.getElementById('admLogin').style.display='none';
+    document.getElementById('admApp').style.display='block';
+    admLoad();
+  } else { document.getElementById('admLoginErr').textContent='Неверный пароль'; }
+}
+async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
+function admTotal(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
+function admDate(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
+function admCounts(){ const c={all:ADM.length,new:0,work:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
+function admRender(){
+  const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admTotal(o),0);
+  document.getElementById('admTiles').innerHTML =
+    '<div class="adm-tile accent"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
+    '<div class="adm-tile"><div class="v">'+ADM.length+'</div><div class="k">всего</div></div>'+
+    '<div class="adm-tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
+  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['transit','В пути'],['done','Выданы']];
+  document.getElementById('admChips').innerHTML = defs.map(d=>'<button class="adm-chip'+(d[0]===admFilter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
+  document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
+  let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
+  const body=document.getElementById('admRows');
+  body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="6" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
+  body.querySelectorAll('.adm-order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button'))return; admOpen=admOpen===tr.dataset.id?null:tr.dataset.id; admRender(); });
+  body.querySelectorAll('.adm-st').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id, sel.value); const o=ADM.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; admRender(); });
+  body.querySelectorAll('.adm-del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ADM=ADM.filter(o=>String(o.id)!==b.dataset.id); admOpen=null; admRender(); });
+}
+function admRow(o){
+  const open=admOpen===String(o.id);
+  const main='<tr class="adm-order '+(o.status==='new'?'isnew':'')+'" data-id="'+o.id+'">'+
+    '<td class="mono" style="font-weight:700">#'+o.id+'</td>'+
+    '<td class="mono adm-date">'+admDate(o)+'</td>'+
+    '<td><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
+    '<td style="text-align:right;font-family:Saira;font-weight:700">'+fmtN(admTotal(o))+' ₽</td>'+
+    '<td><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
+    '<td style="color:#8b959b">›</td></tr>';
+  if(!open) return main;
+  const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+' <b>× '+it[1]+'</b></span><span class="mono" style="color:#5f6a72">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
+  const sel='<select class="adm-st" data-id="'+o.id+'">'+Object.keys(ST).map(sx=>'<option value="'+sx+'" '+(sx===o.status?'selected':'')+'>'+ST[sx]+'</option>').join('')+'</select>';
+  const tel=(o.phone||'').replace(/[^0-9+]/g,'');
+  return main+'<tr class="adm-detail"><td colspan="6"><div class="adm-det">'+
+    '<div>'+items+'<div class="adm-tot"><span>Итого</span><span>'+fmtN(admTotal(o))+' ₽</span></div></div>'+
+    '<div class="adm-side">'+
+      '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
+      '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
+      '<div><span class="l">Комментарий</span>'+(o.comment||'—')+'</div>'+
+      '<div><span class="l">Статус</span>'+sel+'</div>'+
+      '<div style="margin-top:12px"><button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить заказ</button></div>'+
+    '</div></div></td></tr>';
+}
+
+/* ---- wiring ---- */
+(function wireOrders(){
+  const $=id=>document.getElementById(id);
+  const on=(id,ev,fn)=>{ const el=$(id); if(el) el.addEventListener(ev,fn); };
+  on('coX','click',closeCheckout);
+  on('coSubmit','click',submitOrder);
+  const cov=$('coOverlay'); if(cov) cov.addEventListener('click',e=>{ if(e.target.id==='coOverlay') closeCheckout(); });
+  on('admLink','click',e=>{ e.preventDefault(); openAdmin(); });
+  on('admLoginBtn','click',admLogin);
+  on('admPass','keydown',e=>{ if(e.key==='Enter') admLogin(); });
+  on('admClose1','click',closeAdmin);
+  on('admClose2','click',closeAdmin);
+  on('admReload','click',admLoad);
+})();
+
 buildFilters(); render(); updateCart();
 window.addEventListener('load', function(){
+  if(location.hash === '#admin'){ if(typeof openAdmin==='function') openAdmin(); return; }
   if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
   window.scrollTo(0,0);
 });
