@@ -329,6 +329,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .adm-badge::before{content:"";width:6px;height:6px;border-radius:50%}
 .adm-badge.new{background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0}.adm-badge.new::before{background:var(--lime2)}
 .adm-badge.work{background:#fdf1dc;color:#8a5b09;border:1px solid #f2dcae}.adm-badge.work::before{background:#e69a1a}
+.adm-badge.transit{background:#e6eefb;color:#1b4b8f;border:1px solid #c6d9f5}.adm-badge.transit::before{background:#2f6fd0}
 .adm-badge.done{background:#e2f5ea;color:#1c6e3f;border:1px solid #bfe6cd}.adm-badge.done::before{background:#2e9e5b}
 .adm-detail td{background:var(--panel2);padding:0}
 .adm-det{padding:16px 20px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
@@ -922,7 +923,7 @@ async function submitOrder(){
 
 /* ---- Админ ---- */
 const fmtN=n=>Number(n||0).toLocaleString('ru-RU');
-const ST={new:'Новый',work:'В работе',done:'Выполнен'};
+const ST={new:'Новый',work:'В работе',transit:'В пути',done:'Выдан'};
 let admFilter='all', admOpen=null, ADM=[];
 function openAdmin(){ const o=document.getElementById('admOverlay'); o.classList.add('on'); document.body.style.overflow='hidden';
   document.getElementById('admLogin').style.display='flex'; document.getElementById('admApp').style.display='none';
@@ -938,14 +939,14 @@ function admLogin(){
 async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
 function admTotal(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
 function admDate(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
-function admCounts(){ const c={all:ADM.length,new:0,work:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
+function admCounts(){ const c={all:ADM.length,new:0,work:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
 function admRender(){
   const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admTotal(o),0);
   document.getElementById('admTiles').innerHTML =
     '<div class="adm-tile accent"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
     '<div class="adm-tile"><div class="v">'+ADM.length+'</div><div class="k">всего</div></div>'+
     '<div class="adm-tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
-  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['done','Выполнены']];
+  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['transit','В пути'],['done','Выданы']];
   document.getElementById('admChips').innerHTML = defs.map(d=>'<button class="adm-chip'+(d[0]===admFilter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
   document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
   let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
