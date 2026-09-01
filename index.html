@@ -503,7 +503,6 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     <div class="adm-wrap">
       <div class="adm-tiles" id="admTiles"></div>
       <div class="adm-chips" id="admChips"></div>
-      <div class="adm-rate" id="admRate"></div>
       <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th style="text-align:right">Маржа</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
     </div>
   </div>
@@ -1016,9 +1015,6 @@ function admRender(){
   const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы']];
   document.getElementById('admChips').innerHTML = defs.map(d=>'<button class="adm-chip'+(d[0]===admFilter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
   document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
-  const rw=document.getElementById('admRate');
-  if(rw){ rw.innerHTML='Курс ¥ → ₽ по умолчанию: <input class="mm-inp" id="rateInp" type="number" step="0.01" min="0" value="'+RATE+'" style="width:90px"> <span style="font-family:Inter;font-weight:400;color:#8b959b;font-size:12px">подставляется в новый заказ; у каждого заказа можно задать свой курс</span>';
-    const ri=document.getElementById('rateInp'); if(ri) ri.onchange=e=>{ RATE=parseFloat(e.target.value)||RATE; try{localStorage.setItem('fb_rate',RATE);}catch(_){} admRender(); }; }
   let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
   const body=document.getElementById('admRows');
   body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="7" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
