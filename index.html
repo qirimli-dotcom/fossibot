@@ -395,7 +395,6 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
@@ -488,7 +487,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
       <p><a href="mailto:info@it-trade.com.ru?subject=Оптовый%20запрос%20FOSSiBOT">info@it-trade.com.ru</a></p>
     </div>
   </div>
-  <div class="bottom"><div class="wrap">© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться. · <a class="foot-admin" href="admin/">админ</a></div></div>
+  <div class="bottom"><div class="wrap">© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться.</div></div>
 </footer>
 
 <div id="printArea"></div>
@@ -526,28 +525,6 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
       <label>Комментарий</label><textarea id="coComment" rows="2" placeholder="Пожелания, сроки…"></textarea>
       <div class="co-err" id="coErr"></div>
       <button class="btn btn-lime" id="coSubmit" style="width:100%;justify-content:center;margin-top:6px">Отправить заказ</button>
-    </div>
-  </div>
-</div>
-<div class="adm-overlay" id="admOverlay" role="dialog" aria-modal="true" aria-label="Админ">
-  <div class="adm-login" id="admLogin">
-    <div class="adm-login-card">
-      <div class="adm-login-head"><span class="brand-mini">FOSSiBOT · Админ</span><button class="co-x" id="admClose1">✕</button></div>
-      <div class="adm-login-body">
-        <label>Пароль</label>
-        <input id="admPass" type="password" placeholder="••••••••">
-        <div class="co-err" id="admLoginErr"></div>
-        <button class="btn btn-lime" id="admLoginBtn" style="width:100%;justify-content:center;margin-top:14px">Войти</button>
-      </div>
-    </div>
-  </div>
-  <div class="adm-app" id="admApp" style="display:none">
-    <div class="adm-top"><span class="brand-mini">FOSSiBOT · Панель заказов</span>
-      <span style="display:flex;gap:8px"><button class="btn btn-line" id="admBack">← На сайт</button><button class="btn btn-line" id="admReload">Обновить</button><button class="co-x" id="admClose2">✕</button></span></div>
-    <div class="adm-wrap">
-      <div class="adm-tiles" id="admTiles"></div>
-      <div class="adm-chips" id="admChips"></div>
-      <div class="adm-card"><table class="adm-table"><thead><tr><th>Заказ</th><th class="adm-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th style="text-align:right">Маржа</th><th>Статус</th><th></th></tr></thead><tbody id="admRows"></tbody></table></div>
     </div>
   </div>
 </div>
@@ -924,48 +901,15 @@ function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)retu
 })();
 
 
-/* ================= ЗАКАЗЫ + АДМИН ================= */
-/* --- Настройки: заполни для «живого» режима через Supabase --- */
-const SUPABASE_URL = '';                 // ← URL проекта Supabase (пока пусто = локальный режим)
-const SUPABASE_KEY = '';                 // ← anon public key
-const ADMIN_PASS   = 'fossibot';         // ← ПАРОЛЬ В АДМИНКУ (обязательно поменяй)
-
-let _sb = null;
-try{ if(SUPABASE_URL && SUPABASE_KEY && window.supabase){ _sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } }catch(e){}
-
+/* ================= ЗАКАЗЫ → Google Таблица ================= */
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwj0ub6cErO9Gzl-z5J1i2NAivt37DKEOUIBTOT5tOQUpa-5-iTwR_Fo8X9CURF2Gsr/exec';
 const Store = {
   async add(o){
-    if(_sb){ const r = await _sb.from('orders').insert(o).select().single(); if(r.error) throw r.error; return r.data; }
-    const a = Store._l(); o.id = Date.now()%1000000; o.created_at = new Date().toISOString(); a.unshift(o);
-    try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){} return o;
-  },
-  async list(){
-    if(_sb){ const r = await _sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error) throw r.error; return r.data||[]; }
-    return Store._l();
-  },
-  async setStatus(id,status){
-    if(_sb){ await _sb.from('orders').update({status}).eq('id', id); return; }
-    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.status=status; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
-  },
-  async setDiscount(id, discount){
-    if(_sb){ await _sb.from('orders').update({discount}).eq('id', id); return; }
-    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ o.discount=discount; try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
-  },
-  async setCosts(id, patch){
-    if(_sb){ await _sb.from('orders').update(patch).eq('id', id); return; }
-    const a = Store._l(); const o = a.find(x=>String(x.id)===String(id)); if(o){ Object.assign(o, patch); try{localStorage.setItem('fb_orders',JSON.stringify(a));}catch(e){} }
-  },
-  async remove(id){
-    if(_sb){ await _sb.from('orders').delete().eq('id', id); return; }
-    const a = Store._l().filter(x=>String(x.id)!==String(id)); try{ localStorage.setItem('fb_orders', JSON.stringify(a)); }catch(e){}
-  },
-  _l(){ try{ return JSON.parse(localStorage.getItem('fb_orders')||'[]'); }catch(e){ return []; } }
+    o.created_at = new Date().toISOString();
+    await fetch(SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(o) });
+    return { id: String(Date.now()).slice(-6) };
+  }
 };
-/* демо-заказы в локальном режиме, чтобы админка не была пустой */
-if(!_sb){ try{ if(!localStorage.getItem('fb_orders')){ localStorage.setItem('fb_orders', JSON.stringify([
-  {id:1041,created_at:new Date(Date.now()-3600e3).toISOString(),status:'new',name:'Ирина К.',phone:'+7 978 402-15-09',company:'СветоТорг',comment:'',items:[['FOSSiBOT F800',10,44188],['FOSSiBOT SP200',10,24551]],total:686390},
-  {id:1040,created_at:new Date(Date.now()-8*3600e3).toISOString(),status:'work',name:'Гоча Берадзе',phone:'+995 599 10-77-42',company:'BatumiRent',comment:'Оплата по счёту',items:[['FOSSiBOT FBP3600 Pro',3,294575]],total:883725}
-])); } }catch(e){} }
 
 /* ---- Оформление заказа ---- */
 function openCheckout(){
@@ -997,139 +941,16 @@ async function submitOrder(){
   btn.disabled=false; btn.textContent='Отправить заказ';
 }
 
-/* ---- Админ ---- */
-const fmtN=n=>Number(n||0).toLocaleString('ru-RU');
-const ST={new:'Новый',work:'В работе',avail:'Доступно к заказу',transit:'В пути',done:'Выдан'};
-let admFilter='all', admOpen=null, ADM=[];
-let RATE=12.5; try{ const _r=parseFloat(localStorage.getItem('fb_rate')); if(_r) RATE=_r; }catch(e){}
-function openAdmin(){ const o=document.getElementById('admOverlay'); o.classList.add('on'); document.body.style.overflow='hidden';
-  document.getElementById('admLogin').style.display='flex'; document.getElementById('admApp').style.display='none';
-  const pw=document.getElementById('admPass'); pw.value=''; setTimeout(()=>pw.focus(),40); }
-function closeAdmin(){ document.getElementById('admOverlay').classList.remove('on'); document.body.style.overflow=''; if(location.hash==='#admin'){ try{ history.replaceState(null,'',location.pathname); }catch(e){} } }
-function admLogin(){
-  if(document.getElementById('admPass').value===ADMIN_PASS){
-    document.getElementById('admLogin').style.display='none';
-    document.getElementById('admApp').style.display='block';
-    admLoad();
-  } else { document.getElementById('admLoginErr').textContent='Неверный пароль'; }
-}
-async function admLoad(){ try{ ADM = await Store.list(); }catch(e){ ADM=[]; } admRender(); }
-function admBase(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
-function admFinal(o){ const b=admBase(o); const d=o.discount||0; return Math.round(b*(1-d/100)); }
-function oRate(o){ return (o && o.rate>0) ? o.rate : RATE; }
-function admCogs(o){ const buy=Array.isArray(o.buy)?o.buy:[]; const r=oRate(o); let c=0; (o.items||[]).forEach((it,i)=>c+=(buy[i]||0)*r*it[1]); return c; }
-function admProfit(o){ return admFinal(o) - admCogs(o) - ((o.logi||0)+(o.other||0)); }
-function admMargin(o){ const buy=Array.isArray(o.buy)?o.buy:[]; if(!buy.length || !buy.some(b=>b>0)) return null; const rev=admFinal(o); return rev>0?(admProfit(o)/rev*100):0; }
-function admMarginCell(o){ const m=admMargin(o); if(m===null) return '<span style="color:#c6ccd0">—</span>'; return '<b style="color:'+(m>=0?'#1c7a44':'#c0392b')+'">'+m.toFixed(0)+'%</b>'; }
-window.mCalc=function(id){
-  const o=ADM.find(x=>String(x.id)===String(id)); if(!o) return; const items=o.items||[];
-  o.buy = items.map((it,i)=>{ const inp=document.getElementById('m-buy-'+id+'-'+i); return inp?(parseFloat(inp.value)||0):(Array.isArray(o.buy)?(o.buy[i]||0):0); });
-  const gl=document.getElementById('m-logi-'+id), go=document.getElementById('m-other-'+id), gr=document.getElementById('m-rate-'+id);
-  o.logi=gl?(parseFloat(gl.value)||0):(o.logi||0); o.other=go?(parseFloat(go.value)||0):(o.other||0);
-  if(gr){ const rv=parseFloat(gr.value)||0; o.rate = rv>0 ? rv : 0; }
-  const gn=document.getElementById('m-note-'+id); if(gn) o.pcomment=gn.value;
-  const r=oRate(o);
-  items.forEach((it,i)=>{ const b=o.buy[i]||0; const rub=b*r; const prof=(it[2]-rub)*it[1];
-    const rs=document.getElementById('m-rub-'+id+'-'+i); if(rs) rs.textContent=fmtN(rub)+' ₽';
-    const ps=document.getElementById('m-ip-'+id+'-'+i);
-    if(ps){ ps.textContent=(prof>=0?'+':'')+fmtN(prof)+' ₽'; ps.className='mm-p '+(prof>=0?'pos':'neg'); } });
-  const cg=document.getElementById('m-cogs-'+id); if(cg) cg.textContent=fmtN(admCogs(o))+' ₽';
-  const profit=admProfit(o), rev=admFinal(o), margin=rev>0?(profit/rev*100):0;
-  const pf=document.getElementById('m-profit-'+id); if(pf){ pf.textContent=(profit>=0?'+':'')+fmtN(profit)+' ₽'; pf.className='mm-profit '+(profit>=0?'pos':'neg'); }
-  const mg=document.getElementById('m-margin-'+id); if(mg){ mg.textContent=margin.toFixed(1)+'%'; mg.className=(profit>=0?'pos':'neg'); }
-};
-window.mSave=async function(id){ const o=ADM.find(x=>String(x.id)===String(id)); if(!o) return; const gn=document.getElementById('m-note-'+id); if(gn) o.pcomment=gn.value;
-  try{ await Store.setCosts(id,{buy:o.buy||[],logi:o.logi||0,other:o.other||0,rate:o.rate||0,pcomment:o.pcomment||''}); }catch(e){} };
-function kpMail(o){
-  const lines=(o.items||[]).map((it,i)=>(i+1)+'. '+it[0]+' — '+it[1]+' шт × '+fmtN(it[2])+' ₽ = '+fmtN(it[1]*it[2])+' ₽').join('\n');
-  const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
-  let body='Коммерческое предложение FOSSiBOT\n\nДля: '+(o.company||o.name||'')+'\n\n'+lines+'\n\nСумма: '+fmtN(base)+' ₽';
-  body += disc>0 ? ('\nСкидка '+disc+'%: −'+fmtN(base-fin)+' ₽\nИтого к оплате: '+fmtN(fin)+' ₽') : ('\nИтого: '+fmtN(fin)+' ₽');
-  body += '\n\nС уважением, FOSSiBOT';
-  return 'mailto:?subject='+encodeURIComponent('Коммерческое предложение FOSSiBOT')+'&body='+encodeURIComponent(body);
-}
-function admDate(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
-function admCounts(){ const c={all:ADM.length,new:0,work:0,avail:0,transit:0,done:0}; ADM.forEach(o=>{ if(c[o.status]!==undefined)c[o.status]++; }); return c; }
-function admRender(){
-  const c=admCounts(); const rev=ADM.reduce((s,o)=>s+admFinal(o),0);
-  document.getElementById('admTiles').innerHTML =
-    '<div class="adm-tile accent"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
-    '<div class="adm-tile"><div class="v">'+ADM.length+'</div><div class="k">всего</div></div>'+
-    '<div class="adm-tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
-  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы']];
-  document.getElementById('admChips').innerHTML = defs.map(d=>'<button class="adm-chip'+(d[0]===admFilter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
-  document.querySelectorAll('#admChips .adm-chip').forEach(b=>b.onclick=()=>{admFilter=b.dataset.f;admRender();});
-  let list=ADM.filter(o=>admFilter==='all'||o.status===admFilter);
-  const body=document.getElementById('admRows');
-  body.innerHTML = list.length ? list.map(admRow).join('') : '<tr><td colspan="7" style="padding:44px;text-align:center;color:#5f6a72">Заказов нет</td></tr>';
-  body.querySelectorAll('.adm-order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button'))return; admOpen=admOpen===tr.dataset.id?null:tr.dataset.id; admRender(); });
-  body.querySelectorAll('.adm-st').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id, sel.value); const o=ADM.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; admRender(); });
-  body.querySelectorAll('.adm-del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ADM=ADM.filter(o=>String(o.id)!==b.dataset.id); admOpen=null; admRender(); });
-  body.querySelectorAll('.adm-disc').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id, v); const o=ADM.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; admRender(); }; });
-  if(admOpen){ try{ mCalc(admOpen); }catch(e){} }
-}
-function admRow(o){
-  const open=admOpen===String(o.id);
-  const main='<tr class="adm-order '+(o.status==='new'?'isnew':'')+'" data-id="'+o.id+'">'+
-    '<td class="c-id mono">#'+o.id+'</td>'+
-    '<td class="c-date adm-date mono">'+admDate(o)+'</td>'+
-    '<td class="c-client"><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
-    '<td class="c-sum" data-l="Сумма">'+fmtN(admFinal(o))+' ₽</td>'+
-    '<td class="c-marg" data-l="Маржа">'+admMarginCell(o)+'</td>'+
-    '<td class="c-st"><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
-    '<td class="c-chev">›</td></tr>';
-  if(!open) return main;
-  const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+'<br><span style="color:#8b959b;font-size:12px">'+fmtN(it[2])+' ₽ × '+it[1]+' шт</span></span><span class="mono" style="color:#15181b;font-weight:600;white-space:nowrap">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
-  const sel='<select class="adm-st" data-id="'+o.id+'">'+Object.keys(ST).map(sx=>'<option value="'+sx+'" '+(sx===o.status?'selected':'')+'>'+ST[sx]+'</option>').join('')+'</select>';
-  const tel=(o.phone||'').replace(/[^0-9+]/g,'');
-  const base=admBase(o), disc=o.discount||0, fin=admFinal(o);
-  const totBlock='<div class="adm-tot"><span>Сумма</span><span>'+fmtN(base)+' ₽</span></div>'+
-    (disc>0?'<div class="adm-tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(base-fin)+' ₽</span></div>':'')+
-    '<div class="adm-tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
-  const buy=Array.isArray(o.buy)?o.buy:[];
-  const mmRows=(o.items||[]).map((it,i)=>'<tr><td class="l">'+it[0]+'</td><td>'+fmtN(it[2])+'</td><td>'+it[1]+'</td><td><input class="mm-inp" id="m-buy-'+o.id+'-'+i+'" type="number" min="0" step="0.01" value="'+(buy[i]||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></td><td class="mono" id="m-rub-'+o.id+'-'+i+'">—</td><td class="mm-p" id="m-ip-'+o.id+'-'+i+'">—</td></tr>').join('');
-  const marginSection='<div class="adm-margin"><div class="mm-h">Расчёт маржи · закупка и расходы</div>'+
-    '<div class="mm-scroll"><table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ¥/шт</th><th>₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table></div>'+
-    '<div class="mm-costs"><label>Логистика ₽ <input class="mm-inp" id="m-logi-'+o.id+'" type="number" min="0" value="'+(o.logi||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
-      '<label>Иные ₽ <input class="mm-inp" id="m-other-'+o.id+'" type="number" min="0" value="'+(o.other||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
-      '<label>Курс ¥→₽ <input class="mm-inp" id="m-rate-'+o.id+'" type="number" min="0" step="0.01" value="'+(o.rate>0?o.rate:RATE)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()" style="width:80px"></label></div>'+
-    '<label class="mm-note-l">Комментарий к закупке</label>'+
-    '<textarea class="mm-note" id="m-note-'+o.id+'" rows="2" placeholder="Поставщик, сроки, условия оплаты, трек…" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()">'+(o.pcomment||'')+'</textarea>'+
-    '<div class="mm-sum"><span>Себестоимость <b id="m-cogs-'+o.id+'">—</b></span><span>Прибыль <b class="mm-profit" id="m-profit-'+o.id+'">—</b></span><span>Маржа <b id="m-margin-'+o.id+'">—</b></span></div>'+
-    '</div>';
-  return main+'<tr class="adm-detail"><td colspan="7"><div class="adm-det">'+
-    '<div>'+items+totBlock+'</div>'+
-    '<div class="adm-side">'+
-      '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
-      '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
-      '<div><span class="l">Комментарий</span>'+(o.comment||'—')+'</div>'+
-      '<div><span class="l">Скидка на заказ</span><input class="adm-disc" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'" style="width:66px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font:inherit"> %</div>'+
-      '<div><span class="l">Статус</span>'+sel+'</div>'+
-      '<div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">'+
-        '<a class="btn btn-line" style="padding:8px 14px;font-size:13px" href="'+kpMail(o)+'">Отправить КП</a>'+
-        '<button class="adm-del" data-id="'+o.id+'" style="background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 14px;cursor:pointer;font:inherit;font-size:13px">Удалить</button>'+
-      '</div>'+
-    '</div></div>'+marginSection+'</td></tr>';
-}
-
-/* ---- wiring ---- */
 (function wireOrders(){
   const $=id=>document.getElementById(id);
   const on=(id,ev,fn)=>{ const el=$(id); if(el) el.addEventListener(ev,fn); };
   on('coX','click',closeCheckout);
   on('coSubmit','click',submitOrder);
   const cov=$('coOverlay'); if(cov) cov.addEventListener('click',e=>{ if(e.target.id==='coOverlay') closeCheckout(); });
-  on('admLoginBtn','click',admLogin);
-  on('admPass','keydown',e=>{ if(e.key==='Enter') admLogin(); });
-  on('admClose1','click',closeAdmin);
-  on('admClose2','click',closeAdmin);
-  on('admBack','click',closeAdmin);
-  on('admReload','click',admLoad);
 })();
 
 buildFilters(); render(); updateCart();
 window.addEventListener('load', function(){
-  if(location.hash === '#admin'){ if(typeof openAdmin==='function') openAdmin(); return; }
   if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
   window.scrollTo(0,0);
 });
