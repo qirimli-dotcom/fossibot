@@ -361,9 +361,53 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .foot-admin{color:#6a7278;text-decoration:underline;cursor:pointer}
 .foot-admin:hover{color:var(--lime)}
 @media(max-width:700px){.adm-tiles{grid-template-columns:1fr 1fr}.adm-det{grid-template-columns:1fr}.adm-date{display:none}}
+
+.c-sum{text-align:right;font-family:'Saira';font-weight:700}
+.c-marg{text-align:right}
+.c-chev{color:#8b959b}
+.mm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(max-width:640px){
+  .adm-top{padding:12px 16px}
+  .adm-top .brand-mini{font-size:13px}
+  .adm-top .btn-line{padding:8px 10px;font-size:12px}
+  .adm-wrap{padding:14px}
+  .adm-tiles{grid-template-columns:1fr 1fr;gap:10px}
+  .adm-table thead{display:none}
+  .adm-table tbody,.adm-table tr,.adm-table tr td{display:block;width:auto}
+  .adm-table tr.adm-order{padding:14px 16px 12px;border-bottom:1px solid var(--line2);position:relative}
+  .adm-table tr.adm-order:hover{background:none}
+  .adm-table tr.adm-order td{border:0!important;padding:0!important;text-align:left!important}
+  .adm-table tr.adm-order.isnew td:first-child{box-shadow:none}
+  .adm-table tr.adm-order.isnew{border-left:3px solid var(--lime)}
+  .c-id{font-family:'JetBrains Mono';font-weight:700;font-size:15px;margin-bottom:2px}
+  .c-date{display:block;font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin-bottom:7px}
+  .c-client{margin:2px 0 9px}
+  .c-sum{display:inline-block;font-family:'Saira';font-weight:800;font-size:18px}
+  .c-marg{display:inline-block;font-family:'JetBrains Mono';font-size:12.5px;margin-left:14px}
+  .c-marg::before{content:attr(data-l)": ";color:#8b959b;font-weight:400}
+  .c-st{display:inline-block;margin-bottom:10px}
+  .c-chev{display:none}
+  .adm-detail>td{display:block!important;padding:0!important}
+  .adm-det{padding:14px 16px}
+  .adm-margin{padding:14px 16px}
+  .mm-t{min-width:440px}
+  .mm-costs{gap:12px}
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112145209', 'ym');
+    ym(112145209, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/112145209" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
 </head>
 <body>
 
@@ -1027,13 +1071,13 @@ function admRender(){
 function admRow(o){
   const open=admOpen===String(o.id);
   const main='<tr class="adm-order '+(o.status==='new'?'isnew':'')+'" data-id="'+o.id+'">'+
-    '<td class="mono" style="font-weight:700">#'+o.id+'</td>'+
-    '<td class="mono adm-date">'+admDate(o)+'</td>'+
-    '<td><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
-    '<td style="text-align:right;font-family:Saira;font-weight:700">'+fmtN(admFinal(o))+' ₽</td>'+
-    '<td style="text-align:right">'+admMarginCell(o)+'</td>'+
-    '<td><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
-    '<td style="color:#8b959b">›</td></tr>';
+    '<td class="c-id mono">#'+o.id+'</td>'+
+    '<td class="c-date adm-date mono">'+admDate(o)+'</td>'+
+    '<td class="c-client"><b>'+(o.name||'—')+'</b><div class="adm-sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
+    '<td class="c-sum" data-l="Сумма">'+fmtN(admFinal(o))+' ₽</td>'+
+    '<td class="c-marg" data-l="Маржа">'+admMarginCell(o)+'</td>'+
+    '<td class="c-st"><span class="adm-badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
+    '<td class="c-chev">›</td></tr>';
   if(!open) return main;
   const items=(o.items||[]).map(it=>'<div class="adm-item"><span>'+it[0]+'<br><span style="color:#8b959b;font-size:12px">'+fmtN(it[2])+' ₽ × '+it[1]+' шт</span></span><span class="mono" style="color:#15181b;font-weight:600;white-space:nowrap">'+fmtN(it[2]*it[1])+' ₽</span></div>').join('');
   const sel='<select class="adm-st" data-id="'+o.id+'">'+Object.keys(ST).map(sx=>'<option value="'+sx+'" '+(sx===o.status?'selected':'')+'>'+ST[sx]+'</option>').join('')+'</select>';
@@ -1045,7 +1089,7 @@ function admRow(o){
   const buy=Array.isArray(o.buy)?o.buy:[];
   const mmRows=(o.items||[]).map((it,i)=>'<tr><td class="l">'+it[0]+'</td><td>'+fmtN(it[2])+'</td><td>'+it[1]+'</td><td><input class="mm-inp" id="m-buy-'+o.id+'-'+i+'" type="number" min="0" step="0.01" value="'+(buy[i]||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></td><td class="mono" id="m-rub-'+o.id+'-'+i+'">—</td><td class="mm-p" id="m-ip-'+o.id+'-'+i+'">—</td></tr>').join('');
   const marginSection='<div class="adm-margin"><div class="mm-h">Расчёт маржи · закупка и расходы</div>'+
-    '<table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ¥/шт</th><th>₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table>'+
+    '<div class="mm-scroll"><table class="mm-t"><thead><tr><th class="l">Позиция</th><th>Продажа ₽/шт</th><th>Кол-во</th><th>Закупка ¥/шт</th><th>₽/шт</th><th>Прибыль поз.</th></tr></thead><tbody>'+mmRows+'</tbody></table></div>'+
     '<div class="mm-costs"><label>Логистика ₽ <input class="mm-inp" id="m-logi-'+o.id+'" type="number" min="0" value="'+(o.logi||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
       '<label>Иные ₽ <input class="mm-inp" id="m-other-'+o.id+'" type="number" min="0" value="'+(o.other||0)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()"></label>'+
       '<label>Курс ¥→₽ <input class="mm-inp" id="m-rate-'+o.id+'" type="number" min="0" step="0.01" value="'+(o.rate>0?o.rate:RATE)+'" oninput="mCalc(\''+o.id+'\')" onchange="mSave(\''+o.id+'\')" onclick="event.stopPropagation()" style="width:80px"></label></div>'+
