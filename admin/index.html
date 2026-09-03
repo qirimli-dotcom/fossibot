@@ -179,6 +179,49 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
   .topbar .tb-btn .tb-txt{display:none}
   .brand .name{font-size:14px}
 }
+
+.buy-overlay{position:fixed;inset:0;z-index:80;background:rgba(15,20,24,.6);backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto}
+.buy-overlay.on{display:flex}
+.buy-modal{background:var(--panel);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-lg);width:720px;max-width:100%;margin:auto}
+.buy-head{background:var(--graphite);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
+.buy-head .t{font-family:'Saira';font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.03em}
+.buy-head .t small{display:block;font-family:'Inter';font-weight:400;font-size:11.5px;color:#aeb8bf;text-transform:none;letter-spacing:0;margin-top:3px}
+.buy-x{background:#333b42;border:0;color:#fff;width:30px;height:30px;border-radius:8px;font-size:15px;cursor:pointer}
+.buy-x:hover{background:var(--lime);color:var(--ink)}
+.buy-body{padding:18px 20px}
+.br-rates{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.br-rate{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:8px 11px}
+.br-rate .l{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:3px}
+.br-rate input{width:82px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:'JetBrains Mono';font-weight:700;font-size:13px;outline:none}
+.br-rate input:focus{border-color:var(--lime2);background:#fcfef0}
+.br-scroll{overflow-x:auto}
+.br-t{width:100%;border-collapse:collapse;margin-bottom:14px}
+.br-t th{background:var(--panel2);text-align:right;font-family:'Saira';font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);padding:8px 9px;border-bottom:1px solid var(--line)}
+.br-t th.l{text-align:left}
+.br-t td{padding:8px 9px;border-bottom:1px solid var(--line2);text-align:right;font-family:'JetBrains Mono';font-size:12.5px}
+.br-t td.l{text-align:left;font-family:'Inter';font-weight:600}
+.br-inp{width:78px;text-align:right;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-family:'JetBrains Mono';font-weight:600;font-size:12px;outline:none}
+.br-inp:focus{border-color:var(--lime2);background:#fcfef0}
+.br-costs{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:12.5px;color:var(--muted)}
+.br-costs label{display:flex;align-items:center;gap:7px}
+.br-note-l{display:block;font-family:'Saira';font-weight:600;font-size:10px;text-transform:uppercase;color:var(--muted);margin:2px 0 5px}
+.br-note{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:inherit;font-size:13px;margin-bottom:14px;outline:none}
+.br-note:focus{border-color:var(--lime2)}
+.br-sum{background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+.br-sr{display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px dashed var(--line)}
+.br-sr .k{color:var(--muted)}.br-sr .v{font-family:'JetBrains Mono';font-weight:600}
+.br-sr.h{border-bottom:0;border-top:2px solid var(--line);margin-top:6px;padding-top:12px}
+.br-sr.h .k{font-family:'Saira';font-weight:700;text-transform:uppercase;font-size:13px;color:var(--ink)}
+.br-sr.h .v{font-family:'Saira';font-weight:800;font-size:16px}
+.br-marg{margin-top:12px;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+.br-marg.pos{background:var(--lime);color:var(--ink)}.br-marg.neg{background:#ff7a6b;color:#3a0f0a}
+.br-marg .k{font-family:'Saira';font-weight:700;text-transform:uppercase;font-size:14px}
+.br-marg .v{font-family:'Saira';font-weight:800;font-size:19px}
+.br-save{margin-top:14px;display:flex;gap:8px;align-items:center}
+.br-saved{color:#1c7a44;font-size:12.5px;font-weight:600}
+.btn-buy{background:var(--graphite);color:#fff;border-color:var(--graphite)}
+.btn-buy:hover{background:#2f363c}
+@media(max-width:640px){ .buy-overlay{padding:10px} .buy-body{padding:14px} .br-t{min-width:520px} }
 </style>
 </head>
 <body>
@@ -212,6 +255,12 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
   </div>
 </div>
 
+<div class="buy-overlay" id="buyOverlay">
+  <div class="buy-modal">
+    <div class="buy-head"><div class="t">Закупка · расчёт<small id="buyMeta"></small></div><button class="buy-x" id="buyX">✕</button></div>
+    <div class="buy-body" id="buyBody"></div>
+  </div>
+</div>
 <script>
 const SUPA_URL = 'https://dultytsrfpdfmgtkdizh.supabase.co';
 const SUPA_KEY = 'sb_publishable_u_dnjc10G1tKM6e3KMi7Kg_lr_TRFAP';
@@ -226,6 +275,7 @@ const Store = {
   async list(){ const r=await sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; return r.data||[]; },
   async setStatus(id,status){ await sb.from('orders').update({status}).eq('id',id); },
   async setDiscount(id,discount){ await sb.from('orders').update({discount}).eq('id',id); },
+  async setBuy(id,patch){ await sb.from('orders').update(patch).eq('id',id); },
   async remove(id){ await sb.from('orders').delete().eq('id',id); }
 };
 
@@ -262,6 +312,7 @@ function render(){
   body.querySelectorAll('.stsel').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id,sel.value); const o=ORDERS.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; render(); });
   body.querySelectorAll('.disc-inp').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id,v); const o=ORDERS.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; render(); }; });
   body.querySelectorAll('.del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ORDERS=ORDERS.filter(o=>String(o.id)!==b.dataset.id); openId=null; render(); });
+  body.querySelectorAll('.btn-buy').forEach(b=>b.onclick=e=>{ e.stopPropagation(); openBuy(b.dataset.id); });
 }
 function row(o){
   const open=openId===String(o.id);
@@ -289,7 +340,7 @@ function row(o){
       '<div class="b-f"><span class="b-l">Комментарий клиента</span><span class="b-v">'+(o.comment||'—')+'</span></div>'+
       '<div class="b-grid"><div class="b-f"><span class="b-l">Скидка</span><span><input class="disc-inp" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'"> %</span></div>'+
       '<div class="b-f"><span class="b-l">Статус</span>'+sel+'</div></div>'+
-      '<div class="b-actions"><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
+      '<div class="b-actions"><button class="btn btn-buy" data-id="'+o.id+'">Закупка</button><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
     '</div>'+
   '</div></td></tr>';
 }
@@ -302,6 +353,110 @@ function kpMail(o){
   return 'mailto:?subject='+encodeURIComponent('Коммерческое предложение FOSSiBOT')+'&body='+encodeURIComponent(body);
 }
 
+
+
+/* ============ ЗАКУПКА / РАСЧЁТ МАРЖИ ============ */
+let buyId = null;
+function num(v,d){ const n=parseFloat(v); return isNaN(n)?(d||0):n; }
+function openBuy(id){
+  const o = ORDERS.find(x=>String(x.id)===String(id)); if(!o) return;
+  buyId = String(id);
+  document.getElementById('buyMeta').textContent = 'Заказ #'+o.id+' · '+(o.company||o.name||'')+' · '+fmtN(base(o))+' ₽';
+  const items = o.items||[];
+  const buyCny = Array.isArray(o.buy_cny)?o.buy_cny:[];
+  const wts = Array.isArray(o.weights)?o.weights:[];
+  const rows = items.map((it,i)=>'<tr>'+
+    '<td class="l">'+it[0]+'</td><td>'+it[1]+'</td>'+
+    '<td><input class="br-inp" data-k="cny" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(buyCny[i]||0)+'"></td>'+
+    '<td id="br-scny-'+i+'">—</td>'+
+    '<td><input class="br-inp" data-k="w" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(wts[i]||0)+'"></td>'+
+    '<td id="br-tw-'+i+'">—</td></tr>').join('');
+  document.getElementById('buyBody').innerHTML =
+    '<div class="br-rates">'+
+      '<div class="br-rate"><span class="l">Курс CNY→USD</span><input id="br-rcny" type="number" step="0.0001" value="'+(o.rate_cny||0.14)+'"></div>'+
+      '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"></div>'+
+      '<div class="br-rate"><span class="l">Тариф логистики, $/кг</span><input id="br-tariff" type="number" step="0.01" value="'+(o.logi_tariff||0)+'"></div>'+
+    '</div>'+
+    '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена CNY</th><th>Сумма CNY</th><th>Вес/шт, кг</th><th>Общий вес</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="br-costs"><label>Иные расходы, $ <input class="br-inp" id="br-other" type="number" min="0" step="0.01" value="'+(o.other_usd||0)+'"></label></div>'+
+    '<span class="br-note-l">Комментарий к закупке</span><textarea class="br-note" id="br-note" rows="2" placeholder="Поставщик, сток, сроки, трек…">'+(o.pcomment||'')+'</textarea>'+
+    '<div class="br-sum">'+
+      '<div class="br-sr"><span class="k">Итого сумма, CNY</span><span class="v" id="br-sumcny">—</span></div>'+
+      '<div class="br-sr"><span class="k">Итого сумма, USD</span><span class="v" id="br-sumusd">—</span></div>'+
+      '<div class="br-sr"><span class="k">Итого вес</span><span class="v" id="br-weight">—</span></div>'+
+      '<div class="br-sr"><span class="k">Логистика, USD</span><span class="v" id="br-logi">—</span></div>'+
+      '<div class="br-sr"><span class="k">Иные расходы, USD</span><span class="v" id="br-otherusd">—</span></div>'+
+      '<div class="br-sr h"><span class="k">Себестоимость, USD</span><span class="v" id="br-cost">—</span></div>'+
+      '<div class="br-sr"><span class="k">Сумма заказа, USD (по курсу)</span><span class="v" id="br-orderusd">—</span></div>'+
+      '<div class="br-marg pos" id="br-marg"><span class="k">Маржа</span><span class="v" id="br-margv">—</span></div>'+
+    '</div>'+
+    '<div class="br-save"><button class="btn btn-lime" id="br-savebtn">Сохранить</button><button class="btn btn-line" id="br-closebtn">Закрыть</button><span class="br-saved" id="br-savedmsg"></span></div>';
+  // wire inputs
+  document.querySelectorAll('#buyBody input, #buyBody textarea').forEach(el=>el.addEventListener('input',buyCalc));
+  document.getElementById('br-savebtn').onclick=buySave;
+  document.getElementById('br-closebtn').onclick=closeBuy;
+  buyCalc();
+  document.getElementById('buyOverlay').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeBuy(){ document.getElementById('buyOverlay').classList.remove('on'); document.body.style.overflow=''; buyId=null; }
+function buyCalc(){
+  const o = ORDERS.find(x=>String(x.id)===String(buyId)); if(!o) return;
+  const items = o.items||[];
+  const rcny = num(document.getElementById('br-rcny').value,0);
+  const rrub = num(document.getElementById('br-rrub').value,0);
+  const tariff = num(document.getElementById('br-tariff').value,0);
+  const other = num(document.getElementById('br-other').value,0);
+  let sumCny=0, weight=0;
+  items.forEach((it,i)=>{
+    const cny = num(document.querySelector('.br-inp[data-k="cny"][data-i="'+i+'"]').value,0);
+    const w   = num(document.querySelector('.br-inp[data-k="w"][data-i="'+i+'"]').value,0);
+    const scny = cny*it[1]; const tw = w*it[1];
+    sumCny += scny; weight += tw;
+    document.getElementById('br-scny-'+i).textContent = fmtN(scny)+' ¥';
+    document.getElementById('br-tw-'+i).textContent = (Math.round(tw*100)/100)+' кг';
+  });
+  const sumUsd = sumCny*rcny;
+  const logi = tariff*weight;
+  const cost = sumUsd + logi + other;
+  const orderUsd = base(o)*rrub;
+  const marg = orderUsd - cost;
+  const margp = orderUsd>0 ? (marg/orderUsd*100) : 0;
+  const usd = n => (Math.round(n)).toLocaleString('ru-RU')+' $';
+  document.getElementById('br-sumcny').textContent = fmtN(sumCny)+' ¥';
+  document.getElementById('br-sumusd').textContent = usd(sumUsd);
+  document.getElementById('br-weight').textContent = (Math.round(weight*100)/100)+' кг';
+  document.getElementById('br-logi').textContent = usd(logi);
+  document.getElementById('br-otherusd').textContent = usd(other);
+  document.getElementById('br-cost').textContent = usd(cost);
+  document.getElementById('br-orderusd').textContent = usd(orderUsd);
+  document.getElementById('br-margv').textContent = (marg>=0?'+':'')+usd(marg)+' · '+margp.toFixed(1)+' %';
+  document.getElementById('br-marg').className = 'br-marg '+(marg>=0?'pos':'neg');
+  const sv=document.getElementById('br-savedmsg'); if(sv) sv.textContent='';
+}
+async function buySave(){
+  const o = ORDERS.find(x=>String(x.id)===String(buyId)); if(!o) return;
+  const items = o.items||[];
+  const buy_cny = items.map((it,i)=>num(document.querySelector('.br-inp[data-k="cny"][data-i="'+i+'"]').value,0));
+  const weights = items.map((it,i)=>num(document.querySelector('.br-inp[data-k="w"][data-i="'+i+'"]').value,0));
+  const patch = {
+    buy_cny, weights,
+    rate_cny: num(document.getElementById('br-rcny').value,0),
+    rate_rub: num(document.getElementById('br-rrub').value,0),
+    logi_tariff: num(document.getElementById('br-tariff').value,0),
+    other_usd: num(document.getElementById('br-other').value,0),
+    pcomment: document.getElementById('br-note').value
+  };
+  Object.assign(o, patch);
+  const btn=document.getElementById('br-savebtn'); btn.disabled=true; btn.textContent='Сохраняем…';
+  try{ await Store.setBuy(o.id, patch); document.getElementById('br-savedmsg').textContent='Сохранено ✓'; }
+  catch(e){ document.getElementById('br-savedmsg').textContent='Ошибка: '+(e.message||e); }
+  btn.disabled=false; btn.textContent='Сохранить';
+}
+(function wireBuy(){
+  const x=document.getElementById('buyX'); if(x) x.onclick=closeBuy;
+  const ov=document.getElementById('buyOverlay'); if(ov) ov.addEventListener('click',e=>{ if(e.target.id==='buyOverlay') closeBuy(); });
+})();
 
 async function load(){ try{ ORDERS=await Store.list(); render(); }catch(e){ document.getElementById('rows').innerHTML='<tr><td colspan="6" style="padding:40px;color:#c0392b">Ошибка загрузки: '+(e.message||e)+'</td></tr>'; } }
 
