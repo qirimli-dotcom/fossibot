@@ -407,6 +407,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/112145209" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -901,22 +902,19 @@ function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)retu
 })();
 
 
-/* ================= ЗАКАЗЫ → Google Таблица ================= */
-const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwj0ub6cErO9Gzl-z5J1i2NAivt37DKEOUIBTOT5tOQUpa-5-iTwR_Fo8X9CURF2Gsr/exec';
+/* ================= ЗАКАЗЫ → Supabase ================= */
+const SUPA_URL = 'https://dultytsrfpdfmgtkdizh.supabase.co';
+const SUPA_KEY = 'sb_publishable_u_dnjc10G1tKM6e3KMi7Kg_lr_TRFAP';
+let _sb = null;
+try{ if(window.supabase && SUPA_URL){ _sb = window.supabase.createClient(SUPA_URL, SUPA_KEY); } }catch(e){}
 const Store = {
   async add(o){
-    o.created_at = new Date().toISOString();
-    const body = JSON.stringify(o);
-    try{
-      // основной способ (можем прочитать ответ, если Apps Script вернёт CORS)
-      const res = await fetch(SHEET_URL, { method:'POST', body: body });
-      try{ const j = await res.json(); if(j && j.id) return { id:j.id }; }catch(_){}
-      return { id: String(Date.now()).slice(-6) };
-    }catch(e){
-      // запасной способ: no-cors (запрос уходит «вслепую», но заказ записывается)
-      await fetch(SHEET_URL, { method:'POST', mode:'no-cors', body: body });
-      return { id: String(Date.now()).slice(-6) };
-    }
+    if(!_sb) throw new Error('Нет соединения с базой');
+    const rec = { name:o.name||'', phone:o.phone||'', company:o.company||'', comment:o.comment||'',
+                  items:o.items||[], total:o.total||0, discount:o.discount||0, status:'new' };
+    const { data, error } = await _sb.from('orders').insert(rec).select('id').single();
+    if(error) throw error;
+    return { id: data.id };
   }
 };
 
