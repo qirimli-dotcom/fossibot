@@ -3,347 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="img/favicon.png">
-<title>FOSSiBOT Power — каталог электростанций и солнечных панелей</title>
-<meta name="description" content="Официальный каталог FOSSiBOT: портативные электростанции LiFePO4, домашние накопители энергии и складные солнечные панели. Оптовые поставки для дилеров и монтажников.">
+<meta name="robots" content="noindex">
+<title>FOSSiBOT · Панель заказов</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@600;700&family=Saira:wght@500;600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@600;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --ink:#15181b; --graphite:#20252a; --graphite2:#2a3037; --graphite3:#343c44;
-  --steel:#eceff1; --panel:#ffffff; --panel2:#f5f7f8; --line:#dde3e6; --line2:#eaeef0;
-  --muted:#5f6a72; --muted2:#8b959b;
-  --lime:#c2e100; --lime2:#a9c800; --lime-ink:#3c4700;
-  --tile-a:#f4f6f7; --tile-b:#dfe5e8;
-  --shadow:0 1px 2px rgba(20,30,35,.05), 0 8px 24px rgba(20,30,35,.06);
-  --shadow-lg:0 24px 60px rgba(15,22,28,.28);
-  --r:14px;
-}
+:root{--ink:#15181b;--graphite:#20252a;--steel:#eceff1;--panel:#fff;--panel2:#f5f7f8;--line:#dde3e6;--line2:#eaeef0;--muted:#5f6a72;--muted2:#8b959b;--lime:#c2e100;--lime2:#a9c800;--lime-ink:#3c4700;--shadow:0 1px 2px rgba(20,30,35,.05),0 8px 24px rgba(20,30,35,.06);--shadow-lg:0 24px 60px rgba(15,22,28,.28);}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--steel);color:var(--ink);
-  font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1180px;margin:0 auto;padding:0 22px}
+body{margin:0;background:var(--steel);color:var(--ink);font-family:'Inter',system-ui,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased}
 .mono{font-family:'JetBrains Mono',monospace}
-
-/* header */
-.hdr{position:sticky;top:0;z-index:40;background:rgba(23,27,31,.92);backdrop-filter:blur(10px);border-bottom:1px solid #0d1013}
-.hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-.brand{display:flex;align-items:center;gap:10px;color:#fff}
-.brand .logo{height:36px;width:auto;display:block}
-.nav{display:flex;gap:26px;align-items:center}
-.nav a{color:#c4ccd1;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .18s}
-.nav a:hover{color:#fff}
-.cta{display:inline-flex;align-items:center;gap:7px;color:var(--ink);background:var(--lime);padding:8px 15px;border-radius:8px;font-weight:600}
-.cta .ico{flex:none}
-.cta.cta-icon{padding:9px 11px}
-.cta:hover{color:var(--ink);filter:brightness(1.06)}
-.hdr-right{display:flex;align-items:center;gap:22px}
-.burger{display:none;background:none;border:0;color:#fff;font-size:24px;cursor:pointer}
-
-/* hero */
-.hero{color:#eef2f4;position:relative;overflow:hidden;background-color:#0f1417;
-  background-image:linear-gradient(90deg,rgba(14,18,21,.95) 0%,rgba(14,18,21,.72) 42%,rgba(14,18,21,.25) 72%,rgba(14,18,21,.1) 100%),linear-gradient(0deg,rgba(14,18,21,.9) 0%,rgba(14,18,21,0) 32%),url(img/hero_bg.jpg);
-  background-size:cover;background-position:center right;background-repeat:no-repeat}
-.hero::before,.hero::after{display:none}
-.hero .wrap{position:relative;padding:60px 22px 56px}
-.hero-text{max-width:600px;position:relative;z-index:1}
-.stats{position:relative;z-index:1}
-.eyebrow{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.22em;color:var(--lime);text-transform:uppercase;margin-bottom:20px}
-.hero h1{font-family:'Saira Condensed','Saira',sans-serif;font-weight:700;font-size:clamp(32px,4.4vw,54px);
-  line-height:1;letter-spacing:-.01em;text-transform:uppercase;margin:0 0 20px;max-width:none}
-.hero h1 em{font-style:normal;color:var(--lime)}
-.hero p.lead{font-size:17px;line-height:1.6;color:#b9c3c9;max-width:56ch;margin:0 0 30px}
-.hero .actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:46px}
-.btn{display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:14px;padding:13px 22px;border-radius:10px;
-  cursor:pointer;border:1px solid transparent;transition:transform .16s,filter .16s,background .16s}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit}
+.brand{display:flex;align-items:center;gap:9px}
+.brand .mark{width:11px;height:20px;background:var(--lime);border-radius:2px;box-shadow:0 0 12px var(--lime)}
+.brand .name{font-family:'Saira';font-weight:800;letter-spacing:.13em;font-size:16px;text-transform:uppercase;color:#fff}
+.brand .name b{color:var(--lime)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;border:1px solid transparent;transition:filter .15s,background .15s,transform .12s}
 .btn:active{transform:translateY(1px)}
-.btn-lime{background:var(--lime);color:var(--ink)}
-.btn-lime:hover{filter:brightness(1.07)}
-.btn-ghost{background:transparent;color:#eef2f4;border-color:#454e56}
-.btn-ghost:hover{border-color:var(--lime);color:#fff}
-.btn-sm{padding:10px 16px;font-size:13px;border-radius:9px}
-.stats{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid #333b42}
-.stat{padding:20px 34px 4px 0;margin-right:34px;border-right:1px solid #333b42}
-.stat:last-child{border-right:0}
-.stat .v{font-family:'Saira',sans-serif;font-weight:700;font-size:26px;color:#fff}
-.stat .v span{color:var(--lime)}
-.stat .k{font-size:12px;color:#8a949b;letter-spacing:.05em;text-transform:uppercase;margin-top:2px}
-
-/* controls */
-.jump-anchor{position:relative;scroll-margin-top:60px}
-.cat-wrap{position:relative}
-.controls{position:sticky;top:60px;z-index:30;background:rgba(236,239,241,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.controls .wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:14px 22px}
-.filters{display:flex;gap:8px;flex-wrap:wrap}
-.chip-f{font-family:'Saira',sans-serif;font-weight:600;font-size:13px;letter-spacing:.03em;padding:8px 15px;border-radius:999px;
-  border:1px solid var(--line);background:var(--panel);color:var(--muted);cursor:pointer;transition:all .16s;text-transform:uppercase}
-.chip-f:hover{border-color:var(--muted2);color:var(--ink)}
-.chip-f.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.chip-f .n{opacity:.55;font-family:'JetBrains Mono',monospace;font-size:11px;margin-left:5px}
-.tools{margin-left:auto;display:flex;gap:10px;align-items:center}
+.btn-lime{background:var(--lime);color:var(--ink)}.btn-lime:hover{filter:brightness(1.06)}
+.btn-line{background:var(--panel);border-color:var(--line);color:var(--ink)}.btn-line:hover{border-color:var(--muted2)}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(120% 120% at 80% 0%,#2a3037,#171b1f)}
+.login-card{background:var(--panel);border-radius:16px;box-shadow:var(--shadow-lg);width:360px;max-width:100%;overflow:hidden}
+.login-head{background:var(--graphite);padding:18px 22px;display:flex;align-items:center;justify-content:space-between}
+.login-body{padding:26px 24px 24px}
+.login-body h1{font-family:'Saira';font-weight:700;font-size:20px;margin:0 0 4px}
+.login-body p{color:var(--muted);margin:0 0 20px;font-size:13px}
+.login-body label{display:block;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.login-body input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px;outline:none;transition:border .15s}
+.login-body input:focus{border-color:var(--lime2)}
+.err{color:#c0392b;font-size:13px;margin-top:10px;min-height:16px}
+.app{display:none}
+.topbar{background:var(--graphite);color:#fff;position:sticky;top:0;z-index:20}
+.topbar .in{max-width:1180px;margin:0 auto;padding:0 22px;height:58px;display:flex;align-items:center;justify-content:space-between}
+.topbar .right{display:flex;align-items:center;gap:10px}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 22px 60px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 18px;box-shadow:var(--shadow)}
+.tile .v{font-family:'Saira';font-weight:700;font-size:24px;line-height:1}
+.tile .k{font-size:12px;color:var(--muted);margin-top:6px}
+.tile.acc{background:linear-gradient(150deg,#f3f8d6,#eaf3c0);border-color:#e0ec9f}.tile.acc .v{color:var(--lime-ink)}
+.toolbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:'Saira';font-weight:600;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--muted)}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip .n{opacity:.5;font-family:'JetBrains Mono';font-size:11px;margin-left:5px}
+.tools{margin-left:auto;display:flex;gap:10px}
 .search{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px}
-.search input{border:0;outline:0;background:none;font-family:'Inter';font-size:14px;width:150px;color:var(--ink)}
+.search input{border:0;outline:0;background:none;font-size:14px;width:190px}
 .search svg{color:var(--muted2);flex:none}
-select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);
-  border-radius:9px;padding:9px 12px;cursor:pointer;font-weight:500}
-
-/* catalog: full-width "spread" cards, like the printed catalogue */
-.catalog{padding:30px 0 20px}
-.grid{display:flex;flex-direction:column;gap:22px}
-.spread{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
-  box-shadow:var(--shadow);display:flex;position:relative;transition:box-shadow .2s,border-color .2s}
-.spread::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--lime);transform:scaleX(0);transform-origin:left;transition:transform .3s;z-index:2}
-.spread:hover{box-shadow:var(--shadow-lg);border-color:#cdd5da}
-.spread:hover::before{transform:scaleX(1)}
-.life{position:relative;flex:0 0 44%;min-height:225px;background:#dfe5e8;overflow:hidden}
-.life img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.tag{position:absolute;top:13px;left:13px;z-index:1;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.1em;
-  text-transform:uppercase;background:rgba(21,24,27,.82);color:#fff;padding:5px 10px;border-radius:6px;backdrop-filter:blur(2px)}
-.tag.exp{top:auto;bottom:13px;left:13px;background:var(--lime);color:var(--lime-ink);font-weight:700}
-.info{padding:20px 26px 16px;flex:1;min-width:0}
-.info-head{margin-bottom:13px;padding-bottom:12px;border-bottom:1px solid var(--line)}
-.info-head::after{content:"";display:table;clear:both}
-.title-row{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:7px}
-.info h3{font-family:'Saira',sans-serif;font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;line-height:1.02;min-width:0}
-.psub{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--muted)}
-.psub b{color:var(--ink);font-weight:700}
-.info-cols{display:flex;margin-bottom:12px}
-.prod-col{flex:0 0 168px;padding-right:22px;border-right:1px solid var(--line);text-align:center;display:flex;flex-direction:column}
-.prod-col > img{max-width:100%;max-height:120px;object-fit:contain;filter:drop-shadow(0 10px 16px rgba(20,30,40,.22))}
-.rc{margin-top:12px}
-.rc-t{display:block;font-family:'Saira';font-weight:600;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px}
-.rc-box{border:1px solid var(--line);border-radius:9px;padding:9px 8px;background:var(--panel2)}
-.rc-box img{max-width:100%;max-height:48px;object-fit:contain;display:block;margin:0 auto}
-.rc-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink);margin-top:5px}
-.param-col{flex:1;padding-left:24px;min-width:0}
-.pp-h{font-family:'Saira',sans-serif;font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
-/* parameter list */
-.params{margin:0 0 14px;padding:0}
-.prow{display:grid;grid-template-columns:120px 1fr;gap:14px;padding:6px 0;border-top:1px solid var(--line2);align-items:start}
-.prow:first-child{border-top:0}
-.prow dt{font-family:'Saira',sans-serif;font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:0;padding-top:2px}
-.prow dd{margin:0;font-size:13.5px;color:var(--ink);line-height:1.5}
-.prow dd .mono{font-size:12.5px}
-.prow dd .li{display:block}
-.prow dd .li::before{content:"›";color:var(--lime2);margin-right:7px;font-weight:700}
-.pill-y{display:inline-block;background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0;
-  font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 9px;border-radius:6px;margin:0 4px 3px 0}
-.wifi-y{display:inline-block;background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0;font-size:11.5px;
-  font-weight:600;padding:2px 9px;border-radius:6px}
-.pfoot{margin-top:auto;padding-top:13px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.price{flex:none;text-align:right;white-space:nowrap}
-.price .pv{display:inline-block;background:var(--lime);color:var(--ink);border-radius:8px;padding:5px 13px;font-family:'Saira',sans-serif;font-weight:700;font-size:17px;line-height:1.15;white-space:nowrap}
-.price .pn{display:block;font-size:11px;color:var(--muted2);letter-spacing:.03em;margin-top:2px}
-.price.empty .pv{font-size:15px;font-weight:600;color:var(--muted)}
-.note-card{font-size:12.5px;color:var(--muted);background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:9px 13px;margin-bottom:14px}
-.empty{text-align:center;padding:60px 20px;color:var(--muted)}
-
-/* about */
-.about{background:var(--graphite);color:#e9eef1;margin-top:34px}
-.about .wrap{padding:64px 22px}
-.about .lead-row{display:grid;grid-template-columns:1.1fr 1fr;gap:48px;align-items:start}
-.about h2{font-family:'Saira Condensed','Saira',sans-serif;font-weight:700;font-size:38px;text-transform:uppercase;letter-spacing:.01em;margin:0 0 18px;line-height:1}
-.about h2 em{font-style:normal;color:var(--lime)}
-.about p{color:#aeb8bf;font-size:15px;line-height:1.68;margin:0 0 14px;max-width:52ch}
-.figs{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#333b42;border:1px solid #333b42;border-radius:12px;overflow:hidden}
-.fig{background:var(--graphite2);padding:22px 20px}
-.fig .v{font-family:'Saira',sans-serif;font-weight:700;font-size:34px;color:#fff;line-height:1}
-.fig .v span{color:var(--lime)}
-.fig .k{font-size:12.5px;color:#939da4;margin-top:8px}
-
-/* footer */
-.foot{background:var(--ink);color:#aab3b9}
-.foot .wrap{padding:44px 22px;display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
-.foot .brand .logo{height:32px}
-.foot .col h4{font-family:'Saira';text-transform:uppercase;letter-spacing:.08em;font-size:12px;color:#6f787e;margin:0 0 10px;font-weight:600}
-.foot .col p{margin:0 0 6px;font-size:13.5px;line-height:1.5}
-.foot a:hover{color:var(--lime)}
-.foot .bottom{border-top:1px solid #262b2f}
-.foot .bottom .wrap{padding:16px 22px;font-size:12px;color:#6a7278}
-
-@media (max-width:900px){
-  .spread{flex-direction:column}
-  .life{flex:auto;min-height:230px}
-}
-@media (max-width:820px){.about .lead-row{grid-template-columns:1fr;gap:28px}}
-@media (max-width:520px){
-  .price{margin-left:12px}
-  .info-cols{flex-direction:column;gap:16px}
-  .prod-col{padding-right:0;border-right:0;border-bottom:1px solid var(--line);padding-bottom:16px;flex-direction:row;gap:14px;align-items:center;text-align:left}
-  .prod-col > img{max-height:96px;flex:none;width:120px}
-  .rc{margin-top:0;flex:1}
-  .param-col{padding-left:0}
-  .info h3{font-size:25px}
-  .prow{grid-template-columns:104px 1fr;gap:10px}
-}
-@media (max-width:680px){
-  .hero{background-image:linear-gradient(180deg,rgba(13,17,20,.78),rgba(13,17,20,.73)),url(img/hero_bg.jpg);background-position:center right}
-  .hero p.lead{color:#fff}
-  .hero-text{text-shadow:0 1px 14px rgba(0,0,0,.5)}
-  .nav{display:none}
-  .burger{display:block}
-  .nav.open{display:flex;position:absolute;top:60px;left:0;right:0;flex-direction:column;gap:0;background:var(--graphite);padding:8px 22px 16px;border-bottom:1px solid #0d1013}
-  .nav.open a{padding:11px 0;border-bottom:1px solid #2c333a;width:100%}
-  .nav.open .cta{margin-top:10px;text-align:center;border-bottom:0}
-  .brand .logo{height:30px}
-  .stat{padding-right:22px;margin-right:20px}
-  .tools{margin-left:0;width:100%}
-  .search{flex:1}.search input{width:100%}
-}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto}}
-
-/* header cart badge */
-.cta.cta-icon{position:relative}
-.cart-count{position:absolute;top:-7px;right:-7px;min-width:19px;height:19px;padding:0 5px;background:var(--ink);color:#fff;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;border-radius:10px;display:none;align-items:center;justify-content:center;line-height:1}
-/* add-to-cart on card */
-.head-right{display:flex;align-items:center;gap:10px;flex:none}
-.add-cart{flex:none;width:34px;height:34px;border:1px solid var(--line);background:var(--panel);border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;color:var(--ink);transition:background .16s,border-color .16s,transform .12s}
-.add-cart:hover{background:var(--lime);border-color:var(--lime)}
-.add-cart:active{transform:scale(.92)}
-/* cart drawer */
-.cart-overlay{position:fixed;inset:0;z-index:70;background:rgba(15,20,24,.55);backdrop-filter:blur(3px);display:none}
-.cart-overlay.on{display:block}
-.cart-drawer{position:absolute;top:0;right:0;height:100%;width:390px;max-width:92vw;background:var(--panel);box-shadow:-20px 0 60px rgba(0,0,0,.3);display:flex;flex-direction:column;animation:slidein .22s ease}
-@keyframes slidein{from{transform:translateX(30px);opacity:.6}to{transform:none;opacity:1}}
-.cart-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line);background:var(--graphite);color:#fff}
-.cart-head h3{margin:0;font-family:'Saira',sans-serif;font-weight:700;font-size:20px;letter-spacing:.02em;text-transform:uppercase}
-.cart-x{background:#333b42;border:0;color:#fff;width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:16px;transition:background .16s}
-.cart-x:hover{background:var(--lime);color:var(--ink)}
-.cart-body{flex:1;overflow-y:auto;padding:6px 20px}
-.cart-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--line2)}
-.ci-name{font-weight:600;font-size:14px;min-width:0}
-.ci-sub{display:block;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);font-weight:400;margin-top:3px}
-.ci-qty{display:flex;align-items:center;gap:6px;flex:none}
-.ci-qty button{width:26px;height:26px;border:1px solid var(--line);background:var(--panel2);border-radius:6px;cursor:pointer;font-size:15px;color:var(--ink);display:inline-flex;align-items:center;justify-content:center}
-.ci-qty button:hover{border-color:var(--muted2)}
-.ci-qty span{min-width:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px}
-.ci-rm{color:var(--muted2)!important;margin-left:2px}
-.ci-rm:hover{color:#c0392b!important;border-color:#e0a99f!important}
-.cart-empty{padding:48px 12px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
-.cart-foot{border-top:1px solid var(--line);padding:16px 20px;display:flex;flex-direction:column;gap:11px}
-.cart-total{font-size:13px;color:var(--muted)}
-.cart-grand{font-family:'Saira',sans-serif;font-weight:700;font-size:19px;color:var(--ink);margin:-2px 0 2px}
-.cart-grand b{color:var(--ink)}
-.cart-total b{color:var(--ink)}
-.cart-foot .btn-lime{justify-content:center;width:100%}
-.cart-clear{background:none;border:0;color:var(--muted2);font-size:13px;cursor:pointer;text-decoration:underline;align-self:center}
-.cart-clear:hover{color:var(--ink)}
-
-.ci-input{width:46px;height:27px;text-align:center;border:1px solid var(--line);border-radius:6px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:var(--ink);background:var(--panel)}
-.ci-input::-webkit-outer-spin-button,.ci-input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.ci-input{-moz-appearance:textfield}
-.btn-dark{background:var(--graphite);color:#fff;justify-content:center;width:100%}
-.btn-dark:hover{background:#2f363c;filter:none}
-#printArea{display:none}
-@media print{
-  .hdr,.hero,.controls,.catalog,.about,.foot,.cart-overlay{display:none!important}
-  body{background:#fff!important}
-  #printArea{display:block!important}
-  .pa-wrap{padding:6mm 4mm;font-family:Arial,Helvetica,sans-serif;color:#111}
-  .pa-head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #111;padding-bottom:10px;margin-bottom:16px}
-  .pa-logo{font-size:24px;font-weight:800;letter-spacing:.04em}
-  .pa-title{font-size:16px;font-weight:700;text-align:right}
-  .pa-date{font-size:12px;color:#555;text-align:right;margin-top:3px}
-  .pa-table{width:100%;border-collapse:collapse;font-size:12.5px}
-  .pa-table th{background:#eee;text-align:left;padding:8px;border:1px solid #bbb;font-weight:700}
-  .pa-table td{padding:7px 8px;border:1px solid #ccc}
-  .pa-table .c{text-align:center;font-weight:700}
-  .pa-total{margin-top:12px;font-weight:700;font-size:14px}
-  .pa-sign{margin-top:26px;font-size:12px;color:#333}
-  .pa-foot{margin-top:22px;font-size:10.5px;color:#999;border-top:1px solid #ddd;padding-top:8px}
-}
-
-.qty-overlay{position:fixed;inset:0;z-index:80;background:rgba(15,20,24,.55);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px}
-.qty-overlay.on{display:flex}
-.qty-modal{background:var(--panel);border-radius:16px;width:340px;max-width:100%;box-shadow:var(--shadow-lg);overflow:hidden;animation:pop .2s ease}
-@keyframes pop{from{transform:translateY(10px) scale(.98);opacity:0}to{transform:none;opacity:1}}
-.qty-head{background:var(--graphite);color:#fff;padding:15px 18px;font-family:'Saira',sans-serif;font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.04em;display:flex;justify-content:space-between;align-items:center}
-.qty-head .x{background:#333b42;border:0;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px;transition:background .16s}
-.qty-head .x:hover{background:var(--lime);color:var(--ink)}
-.qty-body{padding:22px 20px 20px}
-.qty-name{font-family:'Saira',sans-serif;font-weight:700;font-size:19px;text-align:center;margin-bottom:18px;color:var(--ink)}
-.qty-stepper{display:flex;align-items:center;justify-content:center;margin-bottom:20px}
-.qty-stepper button{width:48px;height:48px;border:1px solid var(--line);background:var(--panel2);font-size:22px;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center;transition:background .14s}
-.qty-stepper button:hover{background:var(--line2)}
-.qty-stepper button:first-child{border-radius:10px 0 0 10px}
-.qty-stepper button:last-child{border-radius:0 10px 10px 0}
-.qty-stepper input{width:88px;height:48px;text-align:center;border:1px solid var(--line);border-left:0;border-right:0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:var(--ink);background:var(--panel)}
-.qty-stepper input::-webkit-outer-spin-button,.qty-stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
-.qty-stepper input{-moz-appearance:textfield}
-.qty-actions{display:flex;gap:10px}
-.qty-actions .btn{flex:1;justify-content:center}
-.btn-line{background:var(--panel);border:1px solid var(--line);color:var(--ink)}
-.btn-line:hover{border-color:var(--muted2)}
-.life.acc{background:linear-gradient(157deg,var(--tile-a),var(--tile-b))}
-.life.acc img{object-fit:contain;padding:28px}
-.info-cols.acc .param-col{padding-left:0}
-
-/* checkout modal */
-.co-overlay{position:fixed;inset:0;z-index:85;background:rgba(15,20,24,.6);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px}
-.co-overlay.on{display:flex}
-.co-modal{background:#fff;border-radius:16px;width:400px;max-width:100%;box-shadow:var(--shadow-lg);overflow:hidden;animation:pop .2s ease}
-.co-head{background:var(--graphite);color:#fff;padding:16px 20px;font-family:'Saira';font-weight:700;font-size:17px;text-transform:uppercase;letter-spacing:.03em;display:flex;justify-content:space-between;align-items:center}
-.co-x{background:#333b42;border:0;color:#fff;width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:15px}
-.co-x:hover{background:var(--lime);color:var(--ink)}
-.co-body{padding:20px}
-.co-body label{display:block;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:12px 0 5px}
-.co-body label:first-child{margin-top:0}
-.co-body input,.co-body textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;font-size:14px;outline:none;resize:vertical}
-.co-body input:focus,.co-body textarea:focus{border-color:var(--lime2)}
-.co-err{color:#c0392b;font-size:13px;margin-top:10px;min-height:16px}
-/* admin */
-.adm-overlay{position:fixed;inset:0;z-index:90;background:var(--steel);display:none;overflow-y:auto}
-.adm-overlay.on{display:block}
-.adm-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(120% 120% at 80% 0%,#2a3037,#171b1f)}
-.adm-login-card{background:#fff;border-radius:16px;box-shadow:var(--shadow-lg);width:340px;max-width:100%;overflow:hidden}
-.adm-login-head{background:var(--graphite);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}
-.brand-mini{font-family:'Saira';font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-size:14px;color:#fff}
-.adm-login-body{padding:24px 22px}
-.adm-login-body label{display:block;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
-.adm-login-body input{width:100%;height:44px;border:1px solid var(--line);border-radius:10px;padding:0 14px;font-size:15px;outline:none}
-.adm-login-body input:focus{border-color:var(--lime2)}
-.adm-top{background:var(--graphite);color:#fff;position:sticky;top:0;z-index:5;padding:13px 22px;display:flex;align-items:center;justify-content:space-between}
-.adm-top .btn-line{background:transparent;border-color:#454e56;color:#eef2f4}
-.adm-wrap{max-width:1120px;margin:0 auto;padding:22px}
-.adm-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
-.adm-tile{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 18px;box-shadow:var(--shadow)}
-.adm-tile .v{font-family:'Saira';font-weight:700;font-size:24px;line-height:1}
-.adm-tile .k{font-size:12px;color:var(--muted);margin-top:6px}
-.adm-tile.accent{background:linear-gradient(150deg,#f3f8d6,#eaf3c0);border-color:#e0ec9f}
-.adm-tile.accent .v{color:var(--lime-ink)}
-.adm-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-.adm-chip{font-family:'Saira';font-weight:600;font-size:12.5px;letter-spacing:.03em;text-transform:uppercase;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer}
-.adm-chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
-.adm-chip .n{opacity:.5;font-family:'JetBrains Mono';font-size:11px;margin-left:5px}
-.adm-card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
-.adm-table{width:100%;border-collapse:collapse}
-.adm-table thead th{background:var(--panel2);text-align:left;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
-.adm-table td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
-.adm-order{cursor:pointer}
-.adm-order:hover{background:#fafcfc}
-.adm-order.isnew td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
-.adm-sub{font-size:12px;color:var(--muted);margin-top:2px}
-.adm-date{font-size:12px;color:var(--muted)}
-.adm-badge{display:inline-flex;align-items:center;gap:6px;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.03em;text-transform:uppercase;padding:5px 10px;border-radius:7px}
-.adm-badge::before{content:"";width:6px;height:6px;border-radius:50%}
-.adm-badge.new{background:#f2f8d6;color:var(--lime-ink);border:1px solid #e2eeb0}.adm-badge.new::before{background:var(--lime2)}
-.adm-badge.work{background:#fdf1dc;color:#8a5b09;border:1px solid #f2dcae}.adm-badge.work::before{background:#e69a1a}
-.adm-badge.transit{background:#e6eefb;color:#1b4b8f;border:1px solid #c6d9f5}.adm-badge.transit::before{background:#2f6fd0}
-.adm-badge.avail{background:#e0f5f2;color:#0f6b60;border:1px solid #bce6df}.adm-badge.avail::before{background:#12a394}
-.adm-badge.done{background:#e2f5ea;color:#1c6e3f;border:1px solid #bfe6cd}.adm-badge.done::before{background:#2e9e5b}
-.adm-detail td{background:var(--panel2);padding:0}
-.adm-det{padding:16px 20px;display:grid;grid-template-columns:1.4fr 1fr;gap:24px}
-.adm-item{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line2);font-size:13px}
-.adm-tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:2px solid var(--line);font-family:'Saira';font-weight:700}
-.adm-side>div{margin-bottom:10px;font-size:14px}
-.adm-side .l{display:block;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
-.adm-st{font:inherit;border:1px solid var(--line);border-radius:7px;padding:5px 8px;background:#fff;cursor:pointer}
-.adm-rate{background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Saira';font-weight:600;font-size:13px;box-shadow:var(--shadow)}
-.adm-margin{border-top:1px solid var(--line);padding:16px 20px;background:#fff}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--panel2);text-align:left;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--line)}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.c-sum{text-align:right;font-family:'Saira';font-weight:700}
+.c-marg{text-align:right}
+.c-chev{color:var(--muted2)}
+.order{cursor:pointer;transition:background .12s}
+.order:hover{background:#fafcfc}
+.order.isnew td:first-child{box-shadow:inset 3px 0 0 var(--lime)}
+.oid{font-family:'JetBrains Mono';font-weight:700}
+.sub{font-size:12px;color:var(--muted);margin-top:2px}
+.date{font-size:12px;color:var(--muted)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:'Saira';font-weight:600;font-size:11px;letter-spacing:.03em;text-transform:uppercase;padding:5px 10px;border-radius:7px}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%}
+.badge.new{background:#f0f8c8;color:var(--lime-ink);border:1px solid #e2eeb0}.badge.new::before{background:var(--lime2)}
+.badge.work{background:#fdecc4;color:#8a5b09;border:1px solid #f2dcae}.badge.work::before{background:#e69a1a}
+.badge.avail{background:#d5f2ec;color:#0f6b60;border:1px solid #bce6df}.badge.avail::before{background:#12a394}
+.badge.transit{background:#dbe7fb;color:#1b4b8f;border:1px solid #c6d9f5}.badge.transit::before{background:#2f6fd0}
+.badge.done{background:#c6ebd0;color:#1c6e3f;border:1px solid #a9dcb8}.badge.done::before{background:#2e9e5b}
+.detail td{background:var(--panel2);padding:0}
+.det{padding:16px 20px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
+.item{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.item:last-of-type{border-bottom:0}
+.item .isub{font-size:11px;color:var(--muted);margin-top:2px}
+.tot{display:flex;justify-content:space-between;margin-top:8px;padding-top:8px;border-top:2px solid var(--line);font-family:'Saira';font-weight:700}
+.side>div{margin-bottom:10px;font-size:14px}
+.side .l{display:block;font-size:11px;color:var(--muted2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.stsel{font:inherit;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background:#fff;cursor:pointer}
+.disc-inp{width:66px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font:inherit}
+.det-actions{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap}
+.det-actions .btn{padding:8px 13px;font-size:13px}
+.del{background:#fff;border:1px solid #e0b4ae;color:#c0392b;border-radius:8px;padding:8px 13px;cursor:pointer;font:inherit;font-size:13px}
+.del:hover{background:#fdeceb}
+.margin{border-top:1px solid var(--line);padding:16px 20px;background:#fff}
 .mm-h{font-family:'Saira';font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.mm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .mm-t{width:100%;border-collapse:collapse;margin-bottom:12px}
 .mm-t th{background:var(--panel2);text-align:right;font-family:'Saira';font-weight:600;font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
 .mm-t th.l{text-align:left}
@@ -352,646 +98,171 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .mm-inp{width:92px;text-align:right;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:'JetBrains Mono';font-weight:600;font-size:12.5px;outline:none}
 .mm-inp:focus{border-color:var(--lime2);background:#fcfef0}
 .mm-p.pos{color:#1c7a44;font-weight:700}.mm-p.neg{color:#c0392b;font-weight:700}
-.mm-costs{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:13px;color:var(--muted)}
+.mm-costs{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:13px;color:var(--muted)}
 .mm-costs label{display:flex;align-items:center;gap:8px}
 .mm-note-l{display:block;font-family:'Saira';font-weight:600;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:2px 0 6px}
 .mm-note{width:100%;border:1px solid var(--line);border-radius:8px;padding:8px 11px;font:inherit;font-size:13px;resize:vertical;outline:none;margin-bottom:12px}
 .mm-note:focus{border-color:var(--lime2)}
-.mm-sum{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:14px;display:flex;gap:20px;flex-wrap:wrap}
+.mm-sum{background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 14px;font-size:14px;display:flex;gap:18px;flex-wrap:wrap}
 .mm-sum b{font-family:'JetBrains Mono'}
 .mm-sum .pos,.mm-profit.pos{color:#1c7a44}.mm-sum .neg,.mm-profit.neg{color:#c0392b}
-.foot-admin{color:#6a7278;text-decoration:underline;cursor:pointer}
-.foot-admin:hover{color:var(--lime)}
-@media(max-width:700px){.adm-tiles{grid-template-columns:1fr 1fr}.adm-det{grid-template-columns:1fr}.adm-date{display:none}}
-
-.c-sum{text-align:right;font-family:'Saira';font-weight:700}
-.c-marg{text-align:right}
-.c-chev{color:#8b959b}
-.mm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.empty{padding:48px;text-align:center;color:var(--muted)}
+.logout{background:#333b42;border:0;color:#fff;font-size:13px;padding:8px 14px;border-radius:8px}.logout:hover{background:#3d454d}
 @media(max-width:640px){
-  .adm-top{padding:12px 16px}
-  .adm-top .brand-mini{font-size:13px}
-  .adm-top .btn-line{padding:8px 10px;font-size:12px}
-  .adm-wrap{padding:14px}
-  .adm-tiles{grid-template-columns:1fr 1fr;gap:10px}
-  .adm-table thead{display:none}
-  .adm-table tbody,.adm-table tr,.adm-table tr td{display:block;width:auto}
-  .adm-table tr.adm-order{padding:14px 16px 12px;border-bottom:1px solid var(--line2);position:relative}
-  .adm-table tr.adm-order:hover{background:none}
-  .adm-table tr.adm-order td{border:0!important;padding:0!important;text-align:left!important}
-  .adm-table tr.adm-order.isnew td:first-child{box-shadow:none}
-  .adm-table tr.adm-order.isnew{border-left:3px solid var(--lime)}
+  .topbar .in{padding:0 14px}.wrap{padding:14px}
+  .tiles{grid-template-columns:1fr 1fr;gap:10px}
+  .tools{width:100%}.search{width:100%}.search input{width:100%}
+  thead{display:none}
+  tbody,tr,tr td{display:block;width:auto}
+  tr.order{padding:14px 16px 12px;border-bottom:1px solid var(--line2);position:relative}
+  tr.order td{border:0!important;padding:0!important;text-align:left!important}
+  tr.order.isnew td:first-child{box-shadow:none}
+  tr.order.isnew{border-left:3px solid var(--lime)}
   .c-id{font-family:'JetBrains Mono';font-weight:700;font-size:15px;margin-bottom:2px}
   .c-date{display:block;font-family:'JetBrains Mono';font-size:11.5px;color:var(--muted);margin-bottom:7px}
   .c-client{margin:2px 0 9px}
   .c-sum{display:inline-block;font-family:'Saira';font-weight:800;font-size:18px}
   .c-marg{display:inline-block;font-family:'JetBrains Mono';font-size:12.5px;margin-left:14px}
-  .c-marg::before{content:attr(data-l)": ";color:#8b959b;font-weight:400}
+  .c-marg::before{content:attr(data-l)": ";color:var(--muted2);font-weight:400}
   .c-st{display:inline-block;margin-bottom:10px}
   .c-chev{display:none}
-  .adm-detail>td{display:block!important;padding:0!important}
-  .adm-det{padding:14px 16px}
-  .adm-margin{padding:14px 16px}
-  .mm-t{min-width:440px}
-  .mm-costs{gap:12px}
+  .detail>td{display:block!important}
+  .det{grid-template-columns:1fr;padding:14px 16px}
+  .margin{padding:14px 16px}.mm-t{min-width:440px}
 }
-.admin-link{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:#59636a;border:1px solid #2c3439;flex:none;transition:color .16s,border-color .16s,background .16s}
-.admin-link:hover{color:var(--lime);border-color:#3a444b;background:#20272c}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-    (function(m,e,t,r,i,k,a){
-        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-        m[i].l=1*new Date();
-        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
-    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=112145209', 'ym');
-    ym(112145209, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/112145209" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
-<header class="hdr">
-  <div class="wrap">
-    <a class="brand" href="#top" aria-label="FOSSiBOT"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></a>
-    <div class="hdr-right">
-      <nav class="nav" id="nav">
-        <a href="#catalog">Каталог</a>
-        <a href="#about">О бренде</a>
-        <a href="#contacts">Контакты</a>
-      </nav>
-      <a class="cta cta-icon" id="cartBtn" href="#" aria-label="Корзина" title="Корзина"><svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg><span class="cart-count" id="cartCount">0</span></a>
-      <button class="burger" id="burger" aria-label="Меню">☰</button>
-    </div>
-  </div>
-</header>
-
-<section class="hero" id="top">
-  <div class="wrap">
-    <div class="hero-text">
-      <div class="eyebrow">Оптовый каталог · FOSSiBOT Power · 2026</div>
-      <h1>Свет и заряд <em>без розетки</em> — от кемпинга до целого дома</h1>
-      <p class="lead">Полная линейка FOSSiBOT на аккумуляторах LiFePO4: портативные электростанции, домашние накопители и складные солнечные панели. От 288 Втч до 15 кВт·ч и мощностью до 7200 Вт — от зарядки гаджетов на выезде до питания дома при отключении света. Поставки только оптом: дилерам, интернет-магазинам и монтажным бригадам.</p>
-      <div class="actions">
-        <a class="btn btn-lime" href="#catalog">Смотреть каталог</a>
-        <a class="btn btn-ghost" href="#about">О производителе</a>
-      </div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="v">17</div><div class="k">моделей в линейке</div></div>
-      <div class="stat"><div class="v">288 Втч–<span>15,4</span> кВтч</div><div class="k">диапазон ёмкости</div></div>
-      <div class="stat"><div class="v">до <span>7200</span> Вт</div><div class="k">выходная мощность</div></div>
-      <div class="stat"><div class="v">LiFePO4</div><div class="k">тип аккумулятора</div></div>
-    </div>
-  </div>
-</section>
-
-<div id="catalog" class="jump-anchor"></div>
-<section class="cat-wrap">
-<div class="controls">
-  <div class="wrap">
-    <div class="filters" id="filters"></div>
-  </div>
-</div>
-
-<main class="catalog">
-  <div class="wrap"><div class="grid" id="grid"></div></div>
-</main>
-</section>
-
-<section class="about" id="about">
-  <div class="wrap">
-    <div class="lead-row">
-      <div>
-        <h2>О бренде <em>FOSSiBOT</em></h2>
-        <p>FOSSiBOT — торговая марка компании Shenzhen Qichang Intelligent Technology Co., Ltd, основанной в июле 2022 года в Шэньчжэне. За ней стоит команда с 8-летним опытом разработки в области накопителей энергии, а также смартфонов и планшетов.</p>
-        <p>Собственное производство располагает 4 линиями, производственной мощностью 50 000 единиц и штатом из 30 инженеров-разработчиков — это гарантирует стабильное качество и предсказуемые сроки поставок для оптовых партнёров.</p>
-      </div>
-      <div class="figs">
-        <div class="fig"><div class="v">2022</div><div class="k">год основания, Шэньчжэнь</div></div>
-        <div class="fig"><div class="v"><span>4</span></div><div class="k">производственные линии</div></div>
-        <div class="fig"><div class="v">50 000</div><div class="k">производственная мощность</div></div>
-        <div class="fig"><div class="v"><span>30</span></div><div class="k">инженеров R&amp;D</div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer class="foot" id="contacts">
-  <div class="wrap">
-    <div class="col">
-      <a class="brand" href="#top"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></a>
-      <p style="margin-top:14px;max-width:34ch">Оптовые поставки электростанций и солнечных панелей FOSSiBOT. B2B — дилерам, интернет-магазинам и монтажным компаниям.</p>
-    </div>
-    <div class="col">
-      <h4>Опт и сотрудничество</h4>
-      <p><a href="mailto:info@it-trade.com.ru?subject=Оптовый%20запрос%20FOSSiBOT">info@it-trade.com.ru</a></p>
-    </div>
-  </div>
-  <div class="bottom"><div class="wrap" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span>© 2026 FOSSiBOT · Каталог для дилеров. Характеристики приведены по данным производителя и могут уточняться.</span><a class="admin-link" href="admin/" title="Панель заказов" aria-label="Админ"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></a></div></div>
-</footer>
-
-<div id="printArea"></div>
-<div class="cart-overlay" id="cartOverlay" role="dialog" aria-modal="true" aria-label="Корзина">
-  <aside class="cart-drawer" id="cartDrawer">
-    <div class="cart-head"><h3>Корзина</h3><button class="cart-x" id="cartX" aria-label="Закрыть">✕</button></div>
-    <div class="cart-body" id="cartBody"></div>
-    <div class="cart-foot" id="cartFoot"></div>
-  </aside>
-</div>
-<div class="qty-overlay" id="qtyOverlay" role="dialog" aria-modal="true" aria-label="Количество">
-  <div class="qty-modal">
-    <div class="qty-head">В корзину<button class="x" id="qtyX" aria-label="Закрыть">✕</button></div>
-    <div class="qty-body">
-      <div class="qty-name" id="qtyName">FOSSiBOT</div>
-      <div class="qty-stepper">
-        <button id="qtyMinus" aria-label="Меньше">−</button>
-        <input id="qtyInput" type="number" min="1" step="1" value="1" aria-label="Количество">
-        <button id="qtyPlus" aria-label="Больше">+</button>
-      </div>
-      <div class="qty-actions">
-        <button class="btn btn-line" id="qtyCancel">Отмена</button>
-        <button class="btn btn-lime" id="qtyAdd">Добавить</button>
-      </div>
+<div class="login" id="login">
+  <div class="login-card">
+    <div class="login-head"><div class="brand"><span class="mark"></span><span class="name">FOSSi<b>BOT</b></span></div></div>
+    <div class="login-body">
+      <h1>Панель заказов</h1>
+      <p>Вход для администратора</p>
+      <label>Пароль</label>
+      <input id="pass" type="password" placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;" autofocus>
+      <button class="btn btn-lime" id="loginBtn" style="width:100%;justify-content:center;margin-top:16px">Войти</button>
+      <div class="err" id="loginErr"></div>
     </div>
   </div>
 </div>
-<div class="co-overlay" id="coOverlay" role="dialog" aria-modal="true" aria-label="Оформление заказа">
-  <div class="co-modal">
-    <div class="co-head">Оформление заказа<button class="co-x" id="coX" aria-label="Закрыть">✕</button></div>
-    <div class="co-body">
-      <label>Ваше имя *</label><input id="coName" type="text" autocomplete="name">
-      <label>Телефон *</label><input id="coPhone" type="tel" inputmode="tel" autocomplete="tel" value="+7 " placeholder="+7 900 000-00-00" maxlength="18">
-      <label>Компания *</label><input id="coCompany" type="text" autocomplete="organization">
-      <label>Комментарий</label><textarea id="coComment" rows="2" placeholder="Пожелания, сроки…"></textarea>
-      <div class="co-err" id="coErr"></div>
-      <button class="btn btn-lime" id="coSubmit" style="width:100%;justify-content:center;margin-top:6px">Отправить заказ</button>
+
+<div class="app" id="app">
+  <div class="topbar"><div class="in">
+    <div class="brand"><span class="mark"></span><span class="name">FOSSi<b>BOT</b></span><span style="font-family:'Saira';font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#c4ccd1;margin-left:8px">&#183; Заказы</span></div>
+    <div class="right"><a class="btn btn-line" href="../" style="background:transparent;border-color:#454e56;color:#eef2f4">&#8592; На сайт</a><button class="btn btn-line" id="reload" style="background:transparent;border-color:#454e56;color:#eef2f4">Обновить</button><button class="logout" id="logout">Выйти</button></div>
+  </div></div>
+  <div class="wrap">
+    <div class="tiles" id="tiles"></div>
+    <div class="toolbar">
+      <div class="chips" id="chips"></div>
+      <div class="tools"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Поиск по клиенту / №…"></label></div>
     </div>
+    <div class="card"><table><thead><tr><th>Заказ</th><th class="c-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th>Статус</th><th></th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="empty" style="display:none">Заказов нет.</div></div>
   </div>
 </div>
+
 <script>
-if('scrollRestoration' in history) history.scrollRestoration='manual';
-const IMG = {"fdc300": "img/p/fdc300.webp", "life_fdc300": "img/life/fdc300.jpg", "f800": "img/p/f800.webp", "life_f800": "img/life/f800.jpg", "f1200": "img/p/f1200.webp", "life_f1200": "img/life/f1200.jpg", "f1800": "img/p/f1800.webp", "life_f1800": "img/life/f1800.jpg", "f2400": "img/p/f2400.webp", "life_f2400": "img/life/f2400.jpg", "f3000": "img/p/f3000.webp", "life_f3000": "img/life/f3000.jpg", "f3600l": "img/p/f3600l.webp", "life_f3600l": "img/life/f3600l.jpg", "f3600pro": "img/p/f3600pro.webp", "life_f3600pro": "img/life/f3600pro.jpg", "fb3840": "img/p/fb3840.webp", "life_fb3840": "img/life/fb3840.jpg", "f7200": "img/p/f7200.webp", "life_f7200": "img/life/f7200.jpg", "fbp1200": "img/p/fbp1200.webp", "life_fbp1200": "img/life/fbp1200.jpg", "fbp2000": "img/p/fbp2000.webp", "life_fbp2000": "img/life/fbp2000.jpg", "fbp3600": "img/p/fbp3600.webp", "life_fbp3600": "img/life/fbp3600.jpg", "fbp3600pro": "img/p/fbp3600pro.webp", "life_fbp3600pro": "img/life/fbp3600pro.jpg", "sp200": "img/p/sp200.webp", "life_sp200": "img/life/sp200.jpg", "sp200plus": "img/p/sp200plus.webp", "life_sp200plus": "img/life/sp200plus.jpg", "sp420": "img/p/sp420.webp", "life_sp420": "img/life/sp420.jpg", "placeholder": "img/p/placeholder.webp", "acc_life": "img/acc_life.jpg", "fac580": "img/aks/FAC580.jpg", "microinverter800": "img/aks/MicroInverter%20800W.png", "foldcart": "img/aks/Foldable%20Cart.png", "mcxt90_5": "img/aks/MC-XT%2090-5M.png", "mcxt90_10": "img/aks/MC-XT%2090-10M.png", "mcxt60_5": "img/aks/MC-XT%2060-5M.png", "mcxt60_10": "img/aks/MC-XT%2060-10M.jpg"};
-
-/* ============================================================
-   ЦЕНЫ. Впиши оптовые цены сюда — по одной строке на модель.
-   Пустая строка "" -> на карточке будет "Цена по запросу".
-   Валюту меняй в CUR ниже (₽ / ₾ / $ / €).
-   ============================================================ */
-const CUR = '₽';
-const PRICES = {
-  fdc300:'16 367', f800:'44 188', f1200:'62 200', f1800:'57 286', f2400:'98 204', f3000:'98 204',
-  f3600l:'0,00', f3600pro:'180 023', fb3840:'150 557', f7200:'294 575',
-  fbp1200:'91 646', fbp2000:'152 202', fbp3600:'229 106', fbp3600pro:'294 575',
-  sp200:'24 551', sp200plus:'26 195', sp420:'45 833',
-  fac580:'21 281', microinverter800:'21 281', foldcart:'6 558',
-  mcxt90_5:'4 101', mcxt90_10:'4 914', mcxt60_5:'3 289', mcxt60_10:'4 101'
-};
-const PRICE_NOTE = 'оптовая цена'; // подпись под ценой
-const ORDER_EMAIL = 'info@it-trade.com.ru';
-
-const CATS = {portable:'Портативные станции', home:'Домашние системы (ESS)', solar:'Солнечные панели', accessory:'Аксессуары'};
-
-const P = [
-  {id:'fdc300', cat:'portable', name:'FDC300', img:'fdc300', pow:328, wh:288, whLbl:'288 Втч', type:'LiFePO4',
-   input:['USB-C: 140 Вт × 2 (до 200 Вт)','Solar: до 120 Вт','AC + Solar: до 260 Вт'],
-   output:['USB-A: 18 Вт','USB-C: 30 Вт × 1, 140 Вт × 2'], rec:['SP200']},
-
-  {id:'f800', cat:'portable', name:'F800', img:'f800', pow:800, wh:512, whLbl:'512 Втч', type:'LiFePO4',
-   input:['AC: 220–240 В, до 400 Вт','Solar: до 200 Вт','Авто: 12 В / 24 В'],
-   output:['AC: 1 × 800 Вт, 220–240 В','USB-A × 2 (18 Вт), USB-C × 2 (PD 20 Вт), USB-C × 1 (PD 100 Вт)','DC: прикуриватель 12 В/10 А + 12 В/10 А DC6530'],
-   weight:'6,5 кг', dims:'10.86 × 8.23 × 9.06 дюйм', rec:['SP200']},
-
-  {id:'f1200', cat:'portable', name:'F1200', img:'f1200', pow:1200, wh:1024, whLbl:'1024 Втч', type:'LiFePO4',
-   input:['AC: 220–240 В, до 1000 Вт','Solar: до 200 Вт','Авто: 12 В / 24 В'],
-   output:['AC: 1 × 1200 Вт, 220–240 В','USB-A × 2 (18 Вт), USB-C × 1 (PD 20 Вт), USB-C × 1 (PD 100 Вт)','DC: прикуриватель 12 В / 10 А'],
-   weight:'11,5 кг', dims:'12.4 × 10.4 × 8.3 дюйм', rec:['SP200']},
-
-  {id:'f1800', cat:'portable', name:'F1800', img:'f1800', pow:1800, wh:1024, whLbl:'1024 Втч', type:'LiFePO4', wifi:true,
-   input:['AC: до 1200 Вт','Solar: до 500 Вт','AC + Solar: до 1200 Вт','Полный заряд за 1,1 ч (приоритет Solar)'],
-   output:['AC: 1800 Вт, 220–240 В','USB-A × 1 (18 Вт), USB-C × 2 (PD 140 Вт)'],
-   weight:'11,25 кг', dims:'14.76 × 8.11 × 10.16 дюйм', rec:['SP420 × 2']},
-
-  {id:'f2400', cat:'portable', name:'F2400', img:'f2400', pow:2400, wh:2048, whLbl:'2048 Втч', type:'LiFePO4',
-   input:['AC: 220–240 В, до 1100 Вт','Solar: до 500 Вт','Авто: 12 В / 24 В'],
-   output:['AC: 3 × 2400 Вт, 220–240 В / 20 А','USB-A × 2 (18 Вт), USB-C × 3 (PD 20 Вт), USB-C × 1 (PD 100 Вт)','DC: 12 В/25 А RV, 12 В/10 А, 2 × 12 В/3 А DC5521'],
-   weight:'22 кг', dims:'15.20 × 11.18 × 12.64 дюйм', rec:['SP200 × 2']},
-
-  {id:'f3000', cat:'portable', name:'F3000', img:'f3000', pow:3000, wh:2048, whLbl:'2048 Втч', type:'LiFePO4',
-   input:['AC: до 2000 Вт','Solar: до 1200 Вт','AC + Solar: до 2000 Вт','Полный заряд за 1,2 ч (приоритет Solar)'],
-   output:['AC: 3000 Вт','USB-C: 100 Вт × 1, 30 Вт × 1','USB-A: 18 Вт × 2','DC: 12 В / 10 А'], rec:['SP420']},
-
-  {id:'f3600l', cat:'portable', name:'F3600L', img:'f3600l', pow:3600, wh:3072, whMax:15360, whLbl:'3072 Втч', type:'LiFePO4',
-   input:['AC: до 2400 Вт','Solar: до 1200 Вт','AC + Solar: до 2400 Вт','Полный заряд за 1,4 ч (приоритет Solar)'],
-   output:['AC: 3600 Вт','USB-C: 100 Вт × 1, 30 Вт × 1','USB-A: 18 Вт × 2','DC: 12 В / 10 А'], rec:['SP420']},
-
-  {id:'f3600pro', cat:'portable', name:'F3600 Pro', img:'f3600pro', pow:3600, wh:3840, whMax:11520, whLbl:'3840 Втч', type:'LiFePO4',
-   input:['AC: 220–240 В, до 2200 Вт','Solar: до 2000 Вт','Авто: 12 В / 24 В'],
-   output:['AC: 3 × 3600 Вт, 220–240 В / 20 А','USB-A × 2 (18 Вт), USB-C × 4 (до 100 Вт)','DC: 12 В/25 А RV, 12 В/10 А, 2 × 12 В/3 А DC5521'],
-   weight:'42 кг', dims:'23.98 × 12.64 × 18.72 дюйм', rec:['SP420 × 2']},
-
-  {id:'fb3840', cat:'portable', name:'FB3840', img:'fb3840', pow:0, wh:3840, whLbl:'3840 Втч', type:'LiFePO4',
-   input:['XT60: 11,5–50 В, до 200 Вт'], output:['USB-A: QC 3.0 18 Вт','USB-C: PD до 100 Вт'],
-   weight:'37,8 кг', dims:'23.98 × 12.64 × 18.72 дюйм', rec:['SP420'],
-   note:'Дополнительная батарея — используется в комплекте с F3600 Pro.'},
-
-  {id:'f7200', cat:'portable', name:'F7200', img:'f7200', pow:7200, wh:5222, whMax:15667, whLbl:'5222,4 Втч', type:'Призматический LiFePO4', wifi:true,
-   input:['AC: до 3000 Вт','Solar: до 3700 Вт','AC + Solar: до 5200 Вт'],
-   output:['AC: 7200 Вт, 220–240 В','USB-A (18 Вт), USB-C × 1 (PD 20 Вт), USB-C × 1 (PD 100 Вт)'],
-   weight:'75 кг', dims:'27.55 × 17.7 × 16.3 дюйм'},
-
-  {id:'fbp1200', cat:'home', name:'FBP1200', img:'fbp1200', pow:1200, wh:1958, whMax:7832, whLbl:'1958 Втч', type:'LiFePO4', wifi:true,
-   input:['AC: 200–240 В, до 1200 Вт','Solar: до 2000 Вт'],
-   output:['AC (on-grid): 800 Вт','AC (off-grid): 1200 Вт','USB-A × 1 (18 Вт), USB-C × 1 (PD 100 Вт)'],
-   weight:'25 кг', dims:'18.11 × 9.8 × 10 дюйм', rec:['SP420 × 2']},
-
-  {id:'fbp2000', cat:'home', name:'FBP2000', img:'fbp2000', pow:2000, wh:4019, whLbl:'4019,2 Втч', type:'LiFePO4',
-   input:['220–240 В, до 2000 Вт'], output:['AC (on-grid): 2000 Вт','AC (off-grid): 2000 Вт']},
-
-  {id:'fbp3600', cat:'home', name:'FBP3600', img:'fbp3600', pow:3600, wh:8038, whLbl:'8038,4 Втч', type:'LiFePO4',
-   input:['220–240 В, до 3600 Вт'], output:['AC (on-grid): 3600 Вт','AC (off-grid): 3600 Вт']},
-
-  {id:'fbp3600pro', cat:'home', name:'FBP3600 Pro', img:'fbp3600pro', pow:3600, wh:12058, whLbl:'12 057,6 Втч', type:'LiFePO4',
-   input:['220–240 В, до 3600 Вт'], output:['AC (on-grid): 3600 Вт','AC (off-grid): 3600 Вт']},
-
-  {id:'sp200', cat:'solar', name:'SP200', img:'sp200', watt:200,
-   solar:{Imp:'11,1 А',Isc:'13,3 А',Vmp:'18 В',VOC:'21,6 В'}, weight:'9,2 кг',
-   dimsF:'640 × 531 мм (сложено)', dimsU:'640 × 2400 мм (разложено)'},
-
-  {id:'sp200plus', cat:'solar', name:'SP200 Pro', img:'sp200plus', watt:200,
-   solar:{Imp:'11,1 А',Isc:'13,3 А',Vmp:'18 В',VOC:'21,6 В'}, weight:'5,3 кг',
-   dimsF:'616 × 532 мм (сложено)', dimsU:'616 × 1992 мм (разложено)'},
-
-  {id:'sp420', cat:'solar', name:'SP420', img:'sp420', watt:420,
-   solar:{Imp:'13,1 А',Isc:'15,7 А',Vmp:'32 В',VOC:'38,4 В'}, weight:'13,97 кг',
-   dimsF:'1036 × 550 мм (сложено)', dimsU:'1036 × 2231 мм (разложено)'},
-
-  {id:'fac580', cat:'accessory', name:'FAC580', img:'fac580', stype:'Зарядное устройство · 580 Вт', compat:'Все электростанции FOSSiBOT', desc:'DC-DC зарядка 580 Вт — в 6 раз быстрее обычной'},
-  {id:'microinverter800', cat:'accessory', name:'Микроинвертор 800 Вт', img:'microinverter800', stype:'Микроинвертор · 800 Вт', compat:'Только для F7200', desc:'Высокоэффективный и безопасный микроинвертор'},
-  {id:'foldcart', cat:'accessory', name:'Складная тележка', img:'foldcart', stype:'Транспортировочная тележка', compat:'F2400 / F1800', desc:'2 колеса на двойных подшипниках, компактно складывается'},
-  {id:'mcxt90_5', cat:'accessory', name:'Кабель MC-XT 90 · 5 м', img:'mcxt90_5', stype:'Соединительный кабель · 5 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt90_10', cat:'accessory', name:'Кабель MC-XT 90 · 10 м', img:'mcxt90_10', stype:'Соединительный кабель · 10 м', compat:'F2400 / F3600 Pro', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_5', cat:'accessory', name:'Кабель MC-XT 60 · 5 м', img:'mcxt60_5', stype:'Соединительный кабель · 5 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
-  {id:'mcxt60_10', cat:'accessory', name:'Кабель MC-XT 60 · 10 м', img:'mcxt60_10', stype:'Соединительный кабель · 10 м', compat:'F800 / F1200', desc:'Подключение солнечной панели к электростанции'},
-];
-
-function priceHTML(p){
-  const v = (PRICES[p.id]||'').toString().trim();
-  if(!v) return '';
-  return `<div class="price"><span class="pv">${v} ${CUR}</span></div>`;
-}
-function paramsHTML(p){
-  const li = a => a.map(x=>`<span class="li">${x}</span>`).join('');
-  const row = (k,v)=>`<div class="prow"><dt>${k}</dt><dd>${v}</dd></div>`;
-  let r='';
-  if(p.cat==='accessory'){
-    r+=row('Совместимость', p.compat);
-    if(p.desc) r+=row('Особенности', p.desc);
-  } else if(p.cat==='solar'){
-    r+=row('Мощность', `<span class="mono">${p.watt} Вт</span>`);
-    r+=row('Vmp / VOC', `<span class="mono">${p.solar.Vmp} / ${p.solar.VOC}</span>`);
-    r+=row('Imp / Isc', `<span class="mono">${p.solar.Imp} / ${p.solar.Isc}</span>`);
-    r+=row('Вес', `<span class="mono">${p.weight}</span>`);
-    r+=row('Габариты', `<span class="li mono">${p.dimsF}</span><span class="li mono">${p.dimsU}</span>`);
-  } else {
-    let cap = `<span class="mono">${p.whLbl}</span>`;
-    if(p.whMax) cap += ` <span class="pill-y">до ${p.whMax.toLocaleString('ru-RU')} Втч</span>`;
-    r+=row('Ёмкость', cap);
-    r+=row('Тип', p.type);
-    if(p.input) r+=row('Вход', li(p.input));
-    if(p.output) r+=row('Выход', li(p.output));
-    if(p.wifi) r+=row('Bluetooth/Wi-Fi', '<span class="wifi-y">Поддерживается</span>');
-    if(p.weight) r+=row('Вес', `<span class="mono">${p.weight}</span>`);
-    if(p.dims) r+=row('Габариты', `<span class="mono">${p.dims}</span>`);
-  }
-  return r;
-}
-function recBox(p){
-  if(!p.rec) return '';
-  const map={'SP200':'sp200','SP200+':'sp200plus','SP420':'sp420'};
-  const items = p.rec.map(x=>{
-    const base = x.replace(/\s*×.*$/,'').trim();     // "SP420 × 2" -> "SP420"
-    const key = map[base]||'';
-    const im = IMG[key]? `<img src="${IMG[key]}" alt="${x}">`:'';
-    return `<div class="rc-box">${im}<div class="rc-lbl">${x}</div></div>`;
-  }).join('');
-  return `<div class="rc"><span class="rc-t">Рекомендованная комплектация</span>${items}</div>`;
-}
-function cardHTML(p){
-  let sub;
-  if(p.cat==='accessory') sub = p.stype;
-  else if(p.cat==='solar') sub = `<b>${p.watt} Вт</b> · солнечная панель`;
-  else if(!p.pow)      sub = `${p.whLbl} · доп. батарея`;
-  else if(p.whMax)     sub = `<b>${p.pow} Вт</b> / до ${p.whMax.toLocaleString('ru-RU')} Втч`;
-  else                 sub = `<b>${p.pow} Вт</b> / ${p.whLbl}`;
-  const note = p.note? `<div class="note-card">${p.note}</div>`:'';
-  const life = p.cat==='accessory' ? (IMG[p.img]||'') : (IMG['life_'+p.id] || IMG[p.img] || '');
-  const title = p.cat==='accessory' ? p.name : 'FOSSiBOT '+p.name;
-  return `<article class="spread" data-id="${p.id}">
-    <div class="life${p.cat==='accessory'?' acc':''}"><img src="${life}" alt="${title}" loading="lazy"></div>
-    <div class="info">
-      <div class="info-head">
-        <div class="title-row">
-          <h3>${title}</h3>
-          <div class="head-right">
-            ${priceHTML(p)}
-            <button class="add-cart" data-id="${p.id}" aria-label="В корзину" title="Добавить в корзину"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="20" r="1.4"/><circle cx="19" cy="20" r="1.4"/><path d="M2.5 3h2.2l2.3 11.4a1.6 1.6 0 0 0 1.6 1.3h8.3a1.6 1.6 0 0 0 1.6-1.2L21.5 7H6"/></svg></button>
-          </div>
-        </div>
-        <div class="psub">${sub}</div>
-      </div>
-      <div class="info-cols${p.cat==='accessory'?' acc':''}">
-        ${p.cat==='accessory' ? '' : `<div class="prod-col">
-          <img src="${IMG[p.img]||''}" alt="${title}" loading="lazy">
-          ${recBox(p)}
-        </div>`}
-        <div class="param-col">
-          <div class="pp-h">Характеристики</div>
-          <dl class="params">${paramsHTML(p)}</dl>
-        </div>
-      </div>
-      ${note}
-    </div>
-  </article>`;
-}
-
-let curCat='all', curSort='cat', curQ='';
-function render(){
-  let list = P.filter(p=> (curCat==='all'||p.cat===curCat));
-  if(curQ){ const q=curQ.toLowerCase();
-    list=list.filter(p=> p.name.toLowerCase().includes(q) || CATS[p.cat].toLowerCase().includes(q)); }
-  const powV=p=>p.pow||p.watt||0, capV=p=>p.wh||(p.watt?p.watt*10:0), ord=p=>P.indexOf(p);
-  list.sort((a,b)=>{
-    if(curSort==='name') return a.name.localeCompare(b.name);
-    if(curSort==='pow')  return powV(b)-powV(a);
-    if(curSort==='cap')  return capV(b)-capV(a);
-    return ord(a)-ord(b);            // 'cat' — порядок как в каталоге (PDF)
-  });
-  const g=document.getElementById('grid');
-  g.innerHTML = list.length ? list.map(cardHTML).join('')
-    : '<div class="empty">Ничего не найдено. Измените фильтр.</div>';
-  g.querySelectorAll('.add-cart').forEach(b=>b.addEventListener('click',e=>{ e.stopPropagation(); addToCart(b.dataset.id); }));
-}
-function buildFilters(){
-  const counts={all:P.length}; Object.keys(CATS).forEach(c=>counts[c]=P.filter(p=>p.cat===c).length);
-  const defs=[['all','Все']].concat(Object.keys(CATS).map(c=>[c,CATS[c]]));
-  const f=document.getElementById('filters');
-  f.innerHTML=defs.map(([k,l])=>`<button class="chip-f${k==='all'?' on':''}" data-c="${k}">${l}<span class="n">${counts[k]}</span></button>`).join('');
-  f.querySelectorAll('.chip-f').forEach(b=>b.onclick=()=>{
-    f.querySelectorAll('.chip-f').forEach(x=>x.classList.remove('on'));
-    b.classList.add('on'); curCat=b.dataset.c; render();
-  });
-}
-const nav=document.getElementById('nav');
-document.getElementById('burger').onclick=()=>nav.classList.toggle('open');
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',function(e){
-    const id=this.getAttribute('href').slice(1);
-    if(!id) return;                       // '#' (корзина) — свой обработчик
-    const el=document.getElementById(id);
-    if(!el) return;
-    e.preventDefault();
-    if(nav) nav.classList.remove('open');
-    const y=el.getBoundingClientRect().top + window.pageYOffset - 66;
-    window.scrollTo({top: y<0?0:y, behavior:'smooth'});
-  });
-});
-
-/* ---------------- Корзина ---------------- */
-let cart = {};   // корзина живёт только в рамках сессии — при F5 обнуляется
-function saveCart(){}   // намеренно не сохраняем: корзина сбрасывается при обновлении
-function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
-function cartTotal(){ return Object.keys(cart).reduce((s,id)=>{ const pr=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0; return s+pr*cart[id]; },0); }
-function priced(){ return Object.keys(cart).every(id=>((PRICES[id]||'').replace(/[^0-9]/g,''))!==''  && parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))>0); }
-let pendingId = null;
-function addToCart(id){
-  pendingId = id;
-  const p = P.find(x=>x.id===id);
-  const nm = document.getElementById('qtyName'); if(nm) nm.textContent = 'FOSSiBOT ' + p.name;
-  const inp = document.getElementById('qtyInput'); if(inp) inp.value = 1;
-  const o = document.getElementById('qtyOverlay'); if(o) o.classList.add('on');
-  if(inp) setTimeout(()=>{ inp.focus(); inp.select(); }, 40);
-}
-function closeQty(){ const o=document.getElementById('qtyOverlay'); if(o) o.classList.remove('on'); pendingId=null; }
-function confirmQty(){
-  if(!pendingId) return;
-  let q = parseInt(document.getElementById('qtyInput').value) || 1; if(q < 1) q = 1;
-  cart[pendingId] = (cart[pendingId]||0) + q; updateCart();
-  closeQty(); openCart();
-}
-function setQty(id,q){ if(q<=0) delete cart[id]; else cart[id]=q; saveCart(); updateCart(); }
-function clearCart(){ cart = {}; saveCart(); updateCart(); }
-function makePDF(){
-  const ids = Object.keys(cart); if(!ids.length) return;
-  const d = new Date().toLocaleDateString('ru-RU');
-  const W = 720, pad = 40, rowH = 30, headH = 92;
-  const H = headH + 26 + (ids.length+1)*rowH + 132;
-  const sc = 2;
-  const cv = document.createElement('canvas'); cv.width = W*sc; cv.height = H*sc;
-  const ctx = cv.getContext('2d'); ctx.scale(sc,sc);
-  ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-  ctx.textBaseline = 'alphabetic';
-  ctx.fillStyle = '#111'; ctx.font = '800 30px Arial, sans-serif'; ctx.fillText('FOSSiBOT', pad, 52);
-  ctx.textAlign = 'right'; ctx.font = '700 16px Arial, sans-serif'; ctx.fillText('Заявка на поставку', W-pad, 42);
-  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#666'; ctx.fillText('Дата: '+d, W-pad, 62);
-  ctx.textAlign = 'left';
-  ctx.strokeStyle = '#111'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(pad, headH-10); ctx.lineTo(W-pad, headH-10); ctx.stroke();
-  const cN = pad+8, cM = pad+44, cS = pad+250, cQ = W-pad-34;
-  let y = headH + 18;
-  ctx.fillStyle = '#eeeeee'; ctx.fillRect(pad, y-18, W-2*pad, rowH);
-  ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif';
-  ctx.fillText('№', cN, y); ctx.fillText('Модель', cM, y); ctx.fillText('Характеристики', cS, y);
-  ctx.textAlign = 'center'; ctx.fillText('Кол-во', cQ, y); ctx.textAlign = 'left';
-  y += rowH;
-  ids.forEach((id,i)=>{
-    const p = P.find(x=>x.id===id);
-    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.cat==='accessory' ? (p.stype||'') : (p.pow? p.pow+' Вт / '+p.whLbl : p.whLbl));
-    ctx.fillStyle = '#111'; ctx.font = '400 13px Arial, sans-serif';
-    ctx.fillText(String(i+1), cN, y);
-    ctx.fillText('FOSSiBOT '+p.name, cM, y);
-    ctx.fillStyle = '#555'; ctx.fillText(spec.slice(0,40), cS, y);
-    ctx.fillStyle = '#111'; ctx.font = '700 13px Arial, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(String(cart[id]), cQ, y); ctx.textAlign = 'left';
-    ctx.strokeStyle = '#e0e0e0'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(pad, y+9); ctx.lineTo(W-pad, y+9); ctx.stroke();
-    y += rowH;
-  });
-  y += 16;
-  ctx.fillStyle = '#111'; ctx.font = '700 15px Arial, sans-serif';
-  ctx.fillText('Позиций: '+ids.length+'   ·   всего '+cartCount()+' шт', pad, y);
-  y += 42;
-  ctx.font = '400 12px Arial, sans-serif'; ctx.fillStyle = '#333';
-  ctx.fillText('Контактное лицо: ___________________    Телефон: ___________________', pad, y);
-  y += 30;
-  ctx.font = '400 10px Arial, sans-serif'; ctx.fillStyle = '#999';
-  ctx.fillText('Оптовый запрос FOSSiBOT · сформировано в онлайн-каталоге', pad, y);
-  const img = cv.toDataURL('image/png');
-  try{
-    if(window.jspdf && window.jspdf.jsPDF){
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({unit:'pt', format:'a4'});
-      const m = 24, iw = pdf.internal.pageSize.getWidth() - m*2, ih = iw*(H/W);
-      pdf.addImage(img, 'PNG', m, m, iw, ih);
-      pdf.save('FOSSiBOT_zayavka.pdf');
-      return;
-    }
-  }catch(e){}
-  const a = document.createElement('a'); a.href = img; a.download = 'FOSSiBOT_zayavka.png'; a.click();
-}
-function updateCart(){
-  const n = cartCount();
-  const badge = document.getElementById('cartCount');
-  if(badge){ badge.textContent = n; if(badge.style) badge.style.display = n ? 'flex' : 'none'; }
-  renderCartBody();
-}
-function renderCartBody(){
-  const body = document.getElementById('cartBody'); const foot = document.getElementById('cartFoot');
-  if(!body || !foot) return;
-  const ids = Object.keys(cart);
-  if(!ids.length){
-    body.innerHTML = '<div class="cart-empty">Корзина пуста.<br>Добавляйте модели кнопкой корзины на карточке.</div>';
-    foot.innerHTML = ''; return;
-  }
-  body.innerHTML = ids.map(id=>{
-    const p = P.find(x=>x.id===id); const q = cart[id];
-    const spec = p.cat==='solar' ? (p.watt+' Вт') : (p.pow? p.pow+' Вт · '+p.whLbl : p.whLbl);
-    return `<div class="cart-item">
-      <div class="ci-name">FOSSiBOT ${p.name}<span class="ci-sub">${spec}</span></div>
-      <div class="ci-qty">
-        <button data-act="dec" data-id="${id}" aria-label="Меньше">−</button>
-        <input class="ci-input" type="number" min="0" step="1" data-id="${id}" value="${q}" aria-label="Количество">
-        <button data-act="inc" data-id="${id}" aria-label="Больше">+</button>
-        <button class="ci-rm" data-act="rm" data-id="${id}" aria-label="Убрать">✕</button>
-      </div>
-    </div>`;
-  }).join('');
-  const lines = ids.map(id=>`FOSSiBOT ${P.find(x=>x.id===id).name} — ${cart[id]} шт`).join('\n');
-  const body_txt = 'Здравствуйте! Прошу выставить счёт на позиции:\n\n' + lines + '\n\nКонтакт для связи: ';
-  const mail = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent('Заявка FOSSiBOT')}&body=${encodeURIComponent(body_txt)}`;
-  foot.innerHTML = `
-    <div class="cart-total">Позиций: <b>${ids.length}</b> · всего <b>${cartCount()} шт</b></div>
-    ${cartTotal()>0 ? `<div class="cart-grand">Итого: <b>${cartTotal().toLocaleString('ru-RU')} ₽</b></div>` : ''}
-    <button class="btn btn-lime" id="cartOrder">Оформить заказ</button>
-    <button class="btn btn-line" id="cartPdf">Скачать PDF</button>
-    <button class="cart-clear" id="cartClear">Очистить корзину</button>`;
-  const cc = document.getElementById('cartClear'); if(cc) cc.onclick = clearCart;
-  const pf = document.getElementById('cartPdf'); if(pf) pf.onclick = makePDF;
-  const co = document.getElementById('cartOrder'); if(co) co.onclick = openCheckout;
-}
-function openCart(){ const o=document.getElementById('cartOverlay'); if(!o)return; o.classList.add('on'); document.body.style.overflow='hidden'; renderCartBody(); }
-function closeCart(){ const o=document.getElementById('cartOverlay'); if(!o)return; o.classList.remove('on'); document.body.style.overflow=''; }
-(function wireCart(){
-  const btn=document.getElementById('cartBtn'); if(btn) btn.addEventListener('click',e=>{e.preventDefault();openCart();});
-  const x=document.getElementById('cartX'); if(x) x.onclick=closeCart;
-  const ov=document.getElementById('cartOverlay'); if(ov) ov.addEventListener('click',e=>{ if(e.target.id==='cartOverlay') closeCart(); });
-  const cb=document.getElementById('cartBody');
-  if(cb) cb.addEventListener('click',e=>{
-    const b=e.target.closest('button[data-act]'); if(!b) return;
-    const id=b.dataset.id, act=b.dataset.act;
-    if(act==='inc') setQty(id,(cart[id]||0)+1);
-    else if(act==='dec') setQty(id,(cart[id]||0)-1);
-    else if(act==='rm') setQty(id,0);
-  });
-  if(cb) cb.addEventListener('change',e=>{ const inp=e.target.closest('.ci-input'); if(!inp) return; setQty(inp.dataset.id, parseInt(inp.value)||0); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeCart(); closeQty(); } });
-  const qi=document.getElementById('qtyInput');
-  const qm=document.getElementById('qtyMinus'), qp=document.getElementById('qtyPlus');
-  if(qm&&qi) qm.onclick=()=>{ qi.value=Math.max(1,(parseInt(qi.value)||1)-1); };
-  if(qp&&qi) qp.onclick=()=>{ qi.value=(parseInt(qi.value)||1)+1; };
-  const qa=document.getElementById('qtyAdd'); if(qa) qa.onclick=confirmQty;
-  const qc=document.getElementById('qtyCancel'); if(qc) qc.onclick=closeQty;
-  const qx=document.getElementById('qtyX'); if(qx) qx.onclick=closeQty;
-  const qo=document.getElementById('qtyOverlay'); if(qo) qo.addEventListener('click',e=>{ if(e.target.id==='qtyOverlay') closeQty(); });
-  if(qi) qi.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); confirmQty(); } });
-})();
-
-
-/* ================= ЗАКАЗЫ → Supabase ================= */
 const SUPA_URL = 'https://dultytsrfpdfmgtkdizh.supabase.co';
 const SUPA_KEY = 'sb_publishable_u_dnjc10G1tKM6e3KMi7Kg_lr_TRFAP';
-let _sb = null;
-try{ if(window.supabase && SUPA_URL){ _sb = window.supabase.createClient(SUPA_URL, SUPA_KEY); } }catch(e){}
+const ADMIN_PASS = 'fossibot';   /* ← ПОМЕНЯЙ пароль на свой */
+const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+const ST = {new:'Новый', work:'В работе', avail:'Доступно к заказу', transit:'В пути', done:'Выдан'};
+const fmtN = n => Number(n||0).toLocaleString('ru-RU');
+let ORDERS = [], filter='all', q='', openId=null;
+
 const Store = {
-  async add(o){
-    if(!_sb) throw new Error('Нет соединения с базой');
-    const rec = { name:o.name||'', phone:o.phone||'', company:o.company||'', comment:o.comment||'',
-                  items:o.items||[], total:o.total||0, discount:o.discount||0, status:'new' };
-    const { data, error } = await _sb.from('orders').insert(rec).select('id').single();
-    if(error) throw error;
-    return { id: data.id };
-  }
+  async list(){ const r=await sb.from('orders').select('*').order('created_at',{ascending:false}); if(r.error)throw r.error; return r.data||[]; },
+  async setStatus(id,status){ await sb.from('orders').update({status}).eq('id',id); },
+  async setDiscount(id,discount){ await sb.from('orders').update({discount}).eq('id',id); },
+  async remove(id){ await sb.from('orders').delete().eq('id',id); }
 };
 
-/* ---- Оформление заказа ---- */
-function fmtRuPhone(v){
-  let dg = (v||'').replace(/\D/g,'');
-  if(dg[0]==='8') dg = '7' + dg.slice(1);       // 8… -> 7…
-  if(dg[0]!=='7') dg = '7' + dg;                // всегда начинается с 7
-  dg = dg.slice(0,11);                          // 7 + 10 цифр
-  const p = dg.slice(1);                        // 10 цифр после +7
-  let out = '+7';
-  if(p.length) out += ' ' + p.slice(0,3);
-  if(p.length>3) out += ' ' + p.slice(3,6);
-  if(p.length>6) out += '-' + p.slice(6,8);
-  if(p.length>8) out += '-' + p.slice(8,10);
-  return out;
+function base(o){ return o.total || (o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); }
+function final(o){ return Math.round(base(o)*(1-(o.discount||0)/100)); }
+function oRate(o){ return (o && o.rate>0)?o.rate:12.5; }
+function cogs(o){ const buy=Array.isArray(o.buy)?o.buy:[]; const r=oRate(o); let c=0; (o.items||[]).forEach((it,i)=>c+=(buy[i]||0)*r*it[1]); return c; }
+function profit(o){ return final(o)-cogs(o)-((o.logi||0)+(o.other||0)); }
+function marginPct(o){ const buy=Array.isArray(o.buy)?o.buy:[]; if(!buy.length||!buy.some(b=>b>0))return null; const rev=final(o); return rev>0?(profit(o)/rev*100):0; }
+function marginCell(o){ const m=marginPct(o); if(m===null)return '<span style="color:#c6ccd0">—</span>'; return '<b style="color:'+(m>=0?'#1c7a44':'#c0392b')+'">'+m.toFixed(0)+'%</b>'; }
+function dt(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
+
+function counts(){ const c={all:ORDERS.length,new:0,work:0,avail:0,transit:0,done:0}; ORDERS.forEach(o=>{if(c[o.status]!==undefined)c[o.status]++;}); return c; }
+function render(){
+  const c=counts(), rev=ORDERS.reduce((s,o)=>s+final(o),0);
+  document.getElementById('tiles').innerHTML =
+    '<div class="tile acc"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
+    '<div class="tile"><div class="v">'+ORDERS.length+'</div><div class="k">всего</div></div>'+
+    '<div class="tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
+  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы']];
+  document.getElementById('chips').innerHTML=defs.map(d=>'<button class="chip'+(d[0]===filter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
+  document.querySelectorAll('#chips .chip').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render();});
+  let list=ORDERS.filter(o=>filter==='all'||o.status===filter);
+  if(q){const t=q.toLowerCase();list=list.filter(o=>((o.name||'')+' '+(o.company||'')+' '+o.id+' '+(o.phone||'')).toLowerCase().includes(t));}
+  const body=document.getElementById('rows');
+  document.getElementById('empty').style.display=list.length?'none':'block';
+  body.innerHTML=list.map(row).join('');
+  body.querySelectorAll('.order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button,input,textarea'))return; openId=openId===tr.dataset.id?null:tr.dataset.id; render(); });
+  body.querySelectorAll('.stsel').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id,sel.value); const o=ORDERS.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; render(); });
+  body.querySelectorAll('.disc-inp').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id,v); const o=ORDERS.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; render(); }; });
+  body.querySelectorAll('.del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ORDERS=ORDERS.filter(o=>String(o.id)!==b.dataset.id); openId=null; render(); });
 }
-function openCheckout(){
-  if(!Object.keys(cart).length) return;
-  const err=document.getElementById('coErr'); if(err) err.textContent='';
-  const ph=document.getElementById('coPhone'); if(ph) ph.value='+7 ';
-  closeCart();
-  document.getElementById('coOverlay').classList.add('on');
-  setTimeout(()=>{ const n=document.getElementById('coName'); if(n) n.focus(); }, 40);
+function row(o){
+  const open=openId===String(o.id);
+  const main='<tr class="order '+(o.status==='new'?'isnew':'')+'" data-id="'+o.id+'">'+
+    '<td class="c-id mono">#'+o.id+'</td>'+
+    '<td class="c-date mono">'+dt(o)+'</td>'+
+    '<td class="c-client"><b>'+(o.name||'—')+'</b><div class="sub">'+(o.company||'')+' · '+(o.phone||'')+'</div></td>'+
+    '<td class="c-sum" data-l="Сумма">'+fmtN(final(o))+' ₽</td>'+
+    '<td class="c-st"><span class="badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
+    '<td class="c-chev">›</td></tr>';
+  if(!open) return main;
+  const items=(o.items||[]).map(it=>'<div class="item"><div>'+it[0]+'<div class="isub">'+fmtN(it[2])+' ₽ × '+it[1]+' шт</div></div><div class="mono">'+fmtN(it[1]*it[2])+' ₽</div></div>').join('');
+  const b=base(o), disc=o.discount||0, fin=final(o);
+  const totBlock='<div class="tot"><span>Сумма</span><span>'+fmtN(b)+' ₽</span></div>'+
+    (disc>0?'<div class="tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(b-fin)+' ₽</span></div>':'')+
+    '<div class="tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
+  const sel='<select class="stsel" data-id="'+o.id+'">'+Object.keys(ST).map(s=>'<option value="'+s+'" '+(s===o.status?'selected':'')+'>'+ST[s]+'</option>').join('')+'</select>';
+  const tel=(o.phone||'').replace(/[^0-9+]/g,'');
+  const kp = kpMail(o);
+  return main+'<tr class="detail"><td colspan="6"><div class="det">'+
+    '<div>'+items+totBlock+'</div>'+
+    '<div class="side">'+
+      '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
+      '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
+      '<div><span class="l">Комментарий клиента</span>'+(o.comment||'—')+'</div>'+
+      '<div><span class="l">Скидка на заказ</span><input class="disc-inp" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'"> %</div>'+
+      '<div><span class="l">Статус</span>'+sel+'</div>'+
+      '<div class="det-actions"><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
+    '</div></div></td></tr>';
 }
-function closeCheckout(){ document.getElementById('coOverlay').classList.remove('on'); }
-async function submitOrder(){
-  const g=id=>document.getElementById(id).value.trim();
-  const name=g('coName'), phone=g('coPhone'), company=g('coCompany'), comment=g('coComment');
-  const err=document.getElementById('coErr');
-  if(!name || !phone || !company){ err.textContent='Заполните имя, телефон и компанию'; return; }
-  const digits = phone.replace(/[^0-9]/g,'');
-  if(!/^7\d{10}$/.test(digits)){ err.textContent='Введите номер РФ полностью: +7 и 10 цифр'; return; }
-  const items=Object.keys(cart).map(id=>{
-    const p=P.find(x=>x.id===id);
-    const price=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0;
-    return [ (p.cat==='accessory'?p.name:'FOSSiBOT '+p.name), cart[id], price ];
-  });
-  const total=items.reduce((sm,it)=>sm+it[1]*it[2],0);
-  const order={name,phone,company,comment,items,total,status:'new'};
-  const btn=document.getElementById('coSubmit'); btn.disabled=true; btn.textContent='Отправляем…';
-  try{
-    const saved=await Store.add(order);
-    closeCheckout(); clearCart();
-    alert('Заказ отправлен! Номер: #'+(saved.id||'—')+'\nМы свяжемся с вами.');
-  }catch(e){ err.textContent='Не удалось отправить. Попробуйте ещё раз.'; }
-  btn.disabled=false; btn.textContent='Отправить заказ';
+function kpMail(o){
+  const lines=(o.items||[]).map((it,i)=>(i+1)+'. '+it[0]+' — '+it[1]+' шт × '+fmtN(it[2])+' ₽ = '+fmtN(it[1]*it[2])+' ₽').join('\n');
+  const bs=base(o), disc=o.discount||0, fin=final(o);
+  let body='Коммерческое предложение FOSSiBOT\n\nДля: '+(o.company||o.name||'')+'\n\n'+lines+'\n\nСумма: '+fmtN(bs)+' ₽';
+  body += disc>0 ? ('\nСкидка '+disc+'%: −'+fmtN(bs-fin)+' ₽\nИтого к оплате: '+fmtN(fin)+' ₽') : ('\nИтого: '+fmtN(fin)+' ₽');
+  body += '\n\nС уважением, FOSSiBOT';
+  return 'mailto:?subject='+encodeURIComponent('Коммерческое предложение FOSSiBOT')+'&body='+encodeURIComponent(body);
 }
 
-(function wireOrders(){
-  const $=id=>document.getElementById(id);
-  const on=(id,ev,fn)=>{ const el=$(id); if(el) el.addEventListener(ev,fn); };
-  on('coX','click',closeCheckout);
-  on('coSubmit','click',submitOrder);
-  const _ph=document.getElementById('coPhone');
-  if(_ph){
-    _ph.addEventListener('input',()=>{ _ph.value = fmtRuPhone(_ph.value); });
-    _ph.addEventListener('focus',()=>{ if(!_ph.value.replace(/\D/g,'').replace(/^7/,'')) _ph.value='+7 '; });
-    _ph.addEventListener('keydown',e=>{ // не давать стереть +7
-      if((e.key==='Backspace'||e.key==='Delete') && _ph.value.replace(/\D/g,'').length<=1){ e.preventDefault(); _ph.value='+7 '; }
-    });
-  }
-  const cov=$('coOverlay'); if(cov) cov.addEventListener('click',e=>{ if(e.target.id==='coOverlay') closeCheckout(); });
-})();
 
-buildFilters(); render(); updateCart();
-window.addEventListener('load', function(){
-  if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
-  window.scrollTo(0,0);
-});
+async function load(){ try{ ORDERS=await Store.list(); render(); }catch(e){ document.getElementById('rows').innerHTML='<tr><td colspan="6" style="padding:40px;color:#c0392b">Ошибка загрузки: '+(e.message||e)+'</td></tr>'; } }
+
+function doLogin(){
+  if(document.getElementById('pass').value===ADMIN_PASS){
+    document.getElementById('login').style.display='none';
+    document.getElementById('app').style.display='block';
+    load();
+    try{ sb.channel('orders-rt').on('postgres_changes',{event:'*',schema:'public',table:'orders'},()=>load()).subscribe(); }catch(e){}
+  } else { document.getElementById('loginErr').textContent='Неверный пароль'; }
+}
+document.getElementById('loginBtn').onclick=doLogin;
+document.getElementById('pass').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
+document.getElementById('logout').onclick=()=>{ document.getElementById('app').style.display='none'; document.getElementById('login').style.display='flex'; document.getElementById('pass').value=''; };
+document.getElementById('reload').onclick=load;
+document.getElementById('search').addEventListener('input',e=>{q=e.target.value;render();});
 </script>
 </body>
 </html>
