@@ -203,6 +203,8 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .br-t td.l{text-align:left;font-family:'Inter';font-weight:600}
 .br-inp{width:78px;text-align:right;border:1px solid var(--line);border-radius:6px;padding:5px 7px;font-family:'JetBrains Mono';font-weight:600;font-size:12px;outline:none}
 .br-inp:focus{border-color:var(--lime2);background:#fcfef0}
+.br-term{width:150px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font:inherit;font-size:12px;outline:none}
+.br-term:focus{border-color:var(--lime2);background:#fcfef0}
 .br-costs{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:12.5px;color:var(--muted)}
 .br-costs label{display:flex;align-items:center;gap:7px}
 .br-note-l{display:block;font-family:'Saira';font-weight:600;font-size:10px;text-transform:uppercase;color:var(--muted);margin:2px 0 5px}
@@ -366,19 +368,21 @@ function openBuy(id){
   const items = o.items||[];
   const buyCny = Array.isArray(o.buy_cny)?o.buy_cny:[];
   const wts = Array.isArray(o.weights)?o.weights:[];
+  const trm = Array.isArray(o.terms)?o.terms:[];
   const rows = items.map((it,i)=>'<tr>'+
     '<td class="l">'+it[0]+'</td><td>'+it[1]+'</td>'+
     '<td><input class="br-inp" data-k="cny" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(buyCny[i]||0)+'"></td>'+
     '<td id="br-scny-'+i+'">—</td>'+
     '<td><input class="br-inp" data-k="w" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(wts[i]||0)+'"></td>'+
-    '<td id="br-tw-'+i+'">—</td></tr>').join('');
+    '<td id="br-tw-'+i+'">—</td>'+
+    '<td class="l"><input class="br-term" data-k="term" data-i="'+i+'" type="text" placeholder="сток / до 16 янв" value="'+((trm[i]||'').replace(/"/g,'&quot;'))+'"></td></tr>').join('');
   document.getElementById('buyBody').innerHTML =
     '<div class="br-rates">'+
       '<div class="br-rate"><span class="l">Курс CNY→USD</span><input id="br-rcny" type="number" step="0.0001" value="'+(o.rate_cny||0.14)+'"><span class="br-tip">1 ¥ ≈ 0.14 $</span></div>'+
       '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"><span class="br-tip">≈ 0.011 при 90 ₽/$</span></div>'+
       '<div class="br-rate"><span class="l">Тариф логистики, $/кг</span><input id="br-tariff" type="number" step="0.01" value="'+(o.logi_tariff||0)+'"></div>'+
     '</div>'+
-    '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена CNY</th><th>Сумма CNY</th><th>Вес/шт, кг</th><th>Общий вес</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена CNY</th><th>Сумма CNY</th><th>Вес/шт, кг</th><th>Общий вес</th><th class="l">Срок производства</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div class="br-costs"><label>Иные расходы, $ <input class="br-inp" id="br-other" type="number" min="0" step="0.01" value="'+(o.other_usd||0)+'"></label></div>'+
     '<span class="br-note-l">Комментарий к закупке</span><textarea class="br-note" id="br-note" rows="2" placeholder="Поставщик, сток, сроки, трек…">'+(o.pcomment||'')+'</textarea>'+
     '<div class="br-sum">'+
@@ -440,8 +444,9 @@ async function buySave(){
   const items = o.items||[];
   const buy_cny = items.map((it,i)=>num(document.querySelector('.br-inp[data-k="cny"][data-i="'+i+'"]').value,0));
   const weights = items.map((it,i)=>num(document.querySelector('.br-inp[data-k="w"][data-i="'+i+'"]').value,0));
+  const terms = items.map((it,i)=>{ const el=document.querySelector('.br-term[data-i="'+i+'"]'); return el?el.value:''; });
   const patch = {
-    buy_cny, weights,
+    buy_cny, weights, terms,
     rate_cny: num(document.getElementById('br-rcny').value,0),
     rate_rub: num(document.getElementById('br-rrub').value,0),
     logi_tariff: num(document.getElementById('br-tariff').value,0),
