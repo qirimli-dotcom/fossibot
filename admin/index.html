@@ -194,6 +194,7 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .br-rate .l{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:3px}
 .br-rate input{width:82px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-family:'JetBrains Mono';font-weight:700;font-size:13px;outline:none}
 .br-rate input:focus{border-color:var(--lime2);background:#fcfef0}
+.br-tip{display:block;font-size:10px;color:var(--muted2);margin-top:4px}
 .br-scroll{overflow-x:auto}
 .br-t{width:100%;border-collapse:collapse;margin-bottom:14px}
 .br-t th{background:var(--panel2);text-align:right;font-family:'Saira';font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted);padding:8px 9px;border-bottom:1px solid var(--line)}
@@ -373,8 +374,8 @@ function openBuy(id){
     '<td id="br-tw-'+i+'">—</td></tr>').join('');
   document.getElementById('buyBody').innerHTML =
     '<div class="br-rates">'+
-      '<div class="br-rate"><span class="l">Курс CNY→USD</span><input id="br-rcny" type="number" step="0.0001" value="'+(o.rate_cny||0.14)+'"></div>'+
-      '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"></div>'+
+      '<div class="br-rate"><span class="l">Курс CNY→USD</span><input id="br-rcny" type="number" step="0.0001" value="'+(o.rate_cny||0.14)+'"><span class="br-tip">1 ¥ ≈ 0.14 $</span></div>'+
+      '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"><span class="br-tip">≈ 0.011 при 90 ₽/$</span></div>'+
       '<div class="br-rate"><span class="l">Тариф логистики, $/кг</span><input id="br-tariff" type="number" step="0.01" value="'+(o.logi_tariff||0)+'"></div>'+
     '</div>'+
     '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена CNY</th><th>Сумма CNY</th><th>Вес/шт, кг</th><th>Общий вес</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
