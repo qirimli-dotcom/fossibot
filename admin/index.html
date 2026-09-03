@@ -73,6 +73,7 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .badge.avail{background:#d5f2ec;color:#0f6b60;border:1px solid #bce6df}.badge.avail::before{background:#12a394}
 .badge.transit{background:#dbe7fb;color:#1b4b8f;border:1px solid #c6d9f5}.badge.transit::before{background:#2f6fd0}
 .badge.done{background:#c6ebd0;color:#1c6e3f;border:1px solid #a9dcb8}.badge.done::before{background:#2e9e5b}
+.badge.cancel{background:#eceef0;color:#6a7278;border:1px solid #dce0e3}.badge.cancel::before{background:#9aa0a6}
 .detail td{background:var(--panel2);padding:0}
 .det{padding:16px 20px;display:grid;grid-template-columns:1.3fr 1fr;gap:24px}
 .item{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line2);font-size:13px}
@@ -154,6 +155,18 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .b-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
 .b-actions .btn{padding:9px 14px;font-size:13px}
 @media(max-width:640px){ .b-body{grid-template-columns:1fr} .b-right{border-left:0;border-top:1px solid var(--line2);background:var(--panel2)} .b-left,.b-right{padding:14px 16px} }
+
+.filter-dd{position:relative}
+.fdd-btn{display:inline-flex;align-items:center;gap:8px;font-family:'Saira';font-weight:600;font-size:13px;letter-spacing:.02em;text-transform:uppercase;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.fdd-btn svg{color:var(--muted2)}
+.fdd-cur{display:inline-flex;align-items:center;gap:7px}
+.fdd-n{font-family:'JetBrains Mono';font-size:11px;color:#fff;background:var(--muted2);border-radius:9px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;padding:0 5px}
+.fdd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:210px;background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow-lg);padding:6px;display:none;z-index:30}
+.fdd-menu.open{display:block}
+.fdd-item{display:flex;align-items:center;justify-content:space-between;width:100%;font-family:'Saira';font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.02em;padding:9px 11px;border:0;background:none;border-radius:8px;color:var(--muted);cursor:pointer}
+.fdd-item:hover{background:var(--panel2);color:var(--ink)}
+.fdd-item.on{background:var(--ink);color:#fff}
+.fdd-item.on .fdd-n{background:rgba(255,255,255,.25)}
 </style>
 </head>
 <body>
@@ -180,7 +193,7 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
   <div class="wrap">
     <div class="tiles" id="tiles"></div>
     <div class="toolbar">
-      <div class="chips" id="chips"></div>
+      <div class="filter-dd" id="filterDD"></div>
       <div class="tools"><label class="search"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input id="search" type="search" placeholder="Поиск по клиенту / №…"></label></div>
     </div>
     <div class="card"><table><thead><tr><th>Заказ</th><th class="c-date">Дата</th><th>Клиент</th><th style="text-align:right">Сумма</th><th>Статус</th><th></th></tr></thead><tbody id="rows"></tbody></table><div class="empty" id="empty" style="display:none">Заказов нет.</div></div>
@@ -193,7 +206,7 @@ const SUPA_KEY = 'sb_publishable_u_dnjc10G1tKM6e3KMi7Kg_lr_TRFAP';
 const ADMIN_PASS = 'fossibot';   /* ← ПОМЕНЯЙ пароль на свой */
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
-const ST = {new:'Новый', work:'В работе', avail:'Доступно к заказу', transit:'В пути', done:'Выдан'};
+const ST = {new:'Новый', work:'В работе', avail:'Доступно к заказу', transit:'В пути', done:'Выдан', cancel:'Отменён'};
 const fmtN = n => Number(n||0).toLocaleString('ru-RU');
 let ORDERS = [], filter='all', q='', openId=null;
 
@@ -213,16 +226,21 @@ function marginPct(o){ const buy=Array.isArray(o.buy)?o.buy:[]; if(!buy.length||
 function marginCell(o){ const m=marginPct(o); if(m===null)return '<span style="color:#c6ccd0">—</span>'; return '<b style="color:'+(m>=0?'#1c7a44':'#c0392b')+'">'+m.toFixed(0)+'%</b>'; }
 function dt(o){ const d=new Date(o.created_at||Date.now()); const z=n=>('0'+n).slice(-2); return z(d.getDate())+'.'+z(d.getMonth()+1)+' '+z(d.getHours())+':'+z(d.getMinutes()); }
 
-function counts(){ const c={all:ORDERS.length,new:0,work:0,avail:0,transit:0,done:0}; ORDERS.forEach(o=>{if(c[o.status]!==undefined)c[o.status]++;}); return c; }
+function counts(){ const c={all:ORDERS.length,new:0,work:0,avail:0,transit:0,done:0,cancel:0}; ORDERS.forEach(o=>{if(c[o.status]!==undefined)c[o.status]++;}); return c; }
 function render(){
   const c=counts(), rev=ORDERS.reduce((s,o)=>s+final(o),0);
   document.getElementById('tiles').innerHTML =
     '<div class="tile acc"><div class="v">'+c.new+'</div><div class="k">новых заказов</div></div>'+
     '<div class="tile"><div class="v">'+ORDERS.length+'</div><div class="k">всего</div></div>'+
     '<div class="tile"><div class="v">'+fmtN(rev)+' ₽</div><div class="k">на сумму</div></div>';
-  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы']];
-  document.getElementById('chips').innerHTML=defs.map(d=>'<button class="chip'+(d[0]===filter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="n">'+c[d[0]]+'</span></button>').join('');
-  document.querySelectorAll('#chips .chip').forEach(b=>b.onclick=()=>{filter=b.dataset.f;render();});
+  const defs=[['all','Все'],['new','Новые'],['work','В работе'],['avail','Доступно'],['transit','В пути'],['done','Выданы'],['cancel','Отменены']];
+  const cur=defs.find(d=>d[0]===filter)||defs[0];
+  document.getElementById('filterDD').innerHTML=
+    '<button class="fdd-btn" id="fddBtn"><span class="fdd-cur">'+cur[1]+'<span class="fdd-n">'+c[cur[0]]+'</span></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></button>'+
+    '<div class="fdd-menu" id="fddMenu">'+defs.map(d=>'<button class="fdd-item'+(d[0]===filter?' on':'')+'" data-f="'+d[0]+'">'+d[1]+'<span class="fdd-n">'+c[d[0]]+'</span></button>').join('')+'</div>';
+  const btn=document.getElementById('fddBtn'), menu=document.getElementById('fddMenu');
+  btn.onclick=e=>{ e.stopPropagation(); menu.classList.toggle('open'); };
+  menu.querySelectorAll('.fdd-item').forEach(b=>b.onclick=()=>{ filter=b.dataset.f; render(); });
   let list=ORDERS.filter(o=>filter==='all'||o.status===filter);
   if(q){const t=q.toLowerCase();list=list.filter(o=>((o.name||'')+' '+(o.company||'')+' '+o.id+' '+(o.phone||'')).toLowerCase().includes(t));}
   const body=document.getElementById('rows');
@@ -288,6 +306,7 @@ document.getElementById('pass').addEventListener('keydown',e=>{ if(e.key==='Ente
 document.getElementById('logout').onclick=()=>{ document.getElementById('app').style.display='none'; document.getElementById('login').style.display='flex'; document.getElementById('pass').value=''; };
 document.getElementById('reload').onclick=load;
 document.getElementById('search').addEventListener('input',e=>{q=e.target.value;render();});
+document.addEventListener('click',()=>{const m=document.getElementById('fddMenu'); if(m)m.classList.remove('open');});
 </script>
 </body>
 </html>
