@@ -520,7 +520,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
     <div class="co-head">Оформление заказа<button class="co-x" id="coX" aria-label="Закрыть">✕</button></div>
     <div class="co-body">
       <label>Ваше имя *</label><input id="coName" type="text" autocomplete="name">
-      <label>Телефон *</label><input id="coPhone" type="tel" autocomplete="tel" placeholder="+7 / +995 …">
+      <label>Телефон *</label><input id="coPhone" type="tel" inputmode="tel" autocomplete="tel" value="+7 " placeholder="+7 900 000-00-00" maxlength="18">
       <label>Компания *</label><input id="coCompany" type="text" autocomplete="organization">
       <label>Комментарий</label><textarea id="coComment" rows="2" placeholder="Пожелания, сроки…"></textarea>
       <div class="co-err" id="coErr"></div>
@@ -906,15 +906,38 @@ const SHEET_URL = 'https://script.google.com/macros/s/AKfycbwj0ub6cErO9Gzl-z5J1i
 const Store = {
   async add(o){
     o.created_at = new Date().toISOString();
-    await fetch(SHEET_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(o) });
-    return { id: String(Date.now()).slice(-6) };
+    const body = JSON.stringify(o);
+    try{
+      // основной способ (можем прочитать ответ, если Apps Script вернёт CORS)
+      const res = await fetch(SHEET_URL, { method:'POST', body: body });
+      try{ const j = await res.json(); if(j && j.id) return { id:j.id }; }catch(_){}
+      return { id: String(Date.now()).slice(-6) };
+    }catch(e){
+      // запасной способ: no-cors (запрос уходит «вслепую», но заказ записывается)
+      await fetch(SHEET_URL, { method:'POST', mode:'no-cors', body: body });
+      return { id: String(Date.now()).slice(-6) };
+    }
   }
 };
 
 /* ---- Оформление заказа ---- */
+function fmtRuPhone(v){
+  let dg = (v||'').replace(/\D/g,'');
+  if(dg[0]==='8') dg = '7' + dg.slice(1);       // 8… -> 7…
+  if(dg[0]!=='7') dg = '7' + dg;                // всегда начинается с 7
+  dg = dg.slice(0,11);                          // 7 + 10 цифр
+  const p = dg.slice(1);                        // 10 цифр после +7
+  let out = '+7';
+  if(p.length) out += ' ' + p.slice(0,3);
+  if(p.length>3) out += ' ' + p.slice(3,6);
+  if(p.length>6) out += '-' + p.slice(6,8);
+  if(p.length>8) out += '-' + p.slice(8,10);
+  return out;
+}
 function openCheckout(){
   if(!Object.keys(cart).length) return;
   const err=document.getElementById('coErr'); if(err) err.textContent='';
+  const ph=document.getElementById('coPhone'); if(ph) ph.value='+7 ';
   closeCart();
   document.getElementById('coOverlay').classList.add('on');
   setTimeout(()=>{ const n=document.getElementById('coName'); if(n) n.focus(); }, 40);
@@ -925,6 +948,8 @@ async function submitOrder(){
   const name=g('coName'), phone=g('coPhone'), company=g('coCompany'), comment=g('coComment');
   const err=document.getElementById('coErr');
   if(!name || !phone || !company){ err.textContent='Заполните имя, телефон и компанию'; return; }
+  const digits = phone.replace(/[^0-9]/g,'');
+  if(!/^7\d{10}$/.test(digits)){ err.textContent='Введите номер РФ полностью: +7 и 10 цифр'; return; }
   const items=Object.keys(cart).map(id=>{
     const p=P.find(x=>x.id===id);
     const price=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0;
@@ -946,6 +971,14 @@ async function submitOrder(){
   const on=(id,ev,fn)=>{ const el=$(id); if(el) el.addEventListener(ev,fn); };
   on('coX','click',closeCheckout);
   on('coSubmit','click',submitOrder);
+  const _ph=document.getElementById('coPhone');
+  if(_ph){
+    _ph.addEventListener('input',()=>{ _ph.value = fmtRuPhone(_ph.value); });
+    _ph.addEventListener('focus',()=>{ if(!_ph.value.replace(/\D/g,'').replace(/^7/,'')) _ph.value='+7 '; });
+    _ph.addEventListener('keydown',e=>{ // не давать стереть +7
+      if((e.key==='Backspace'||e.key==='Delete') && _ph.value.replace(/\D/g,'').length<=1){ e.preventDefault(); _ph.value='+7 '; }
+    });
+  }
   const cov=$('coOverlay'); if(cov) cov.addEventListener('click',e=>{ if(e.target.id==='coOverlay') closeCheckout(); });
 })();
 
