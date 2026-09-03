@@ -130,6 +130,30 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
   .det{grid-template-columns:1fr;padding:14px 16px}
   .margin{padding:14px 16px}.mm-t{min-width:440px}
 }
+
+.detail td{background:var(--panel2);padding:0}
+.b-body{display:grid;grid-template-columns:1.25fr 1fr;gap:0}
+.b-left{padding:16px 20px}
+.b-h{font-family:'Saira';font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.b-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line2);font-size:13px}
+.b-row:last-of-type{border-bottom:0}
+.b-nm{font-weight:600}
+.b-q{font-family:'JetBrains Mono';color:var(--muted);font-weight:400;margin-left:5px}
+.b-u{display:block;font-family:'JetBrains Mono';font-size:11px;color:var(--muted2);font-weight:400;margin-top:2px}
+.b-s{font-family:'Saira';font-weight:700;white-space:nowrap}
+.b-tot{margin-top:10px;padding-top:10px;border-top:2px solid var(--line)}
+.b-tl{display:flex;justify-content:space-between;font-size:13px;padding:2px 0;color:var(--muted)}
+.b-tl.disc{color:#8a5b09;font-weight:600}
+.b-pay{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:'Saira';font-weight:800;font-size:18px}
+.b-pay span:last-child{color:var(--lime-ink)}
+.b-right{background:#fff;border-left:1px solid var(--line2);padding:16px 20px}
+.b-f{margin-bottom:12px}
+.b-l{display:block;font-size:10.5px;color:var(--muted2);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px}
+.b-v{font-weight:500}
+.b-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+.b-actions{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap}
+.b-actions .btn{padding:9px 14px;font-size:13px}
+@media(max-width:640px){ .b-body{grid-template-columns:1fr} .b-right{border-left:0;border-top:1px solid var(--line2);background:var(--panel2)} .b-left,.b-right{padding:14px 16px} }
 </style>
 </head>
 <body>
@@ -219,24 +243,25 @@ function row(o){
     '<td class="c-st"><span class="badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
     '<td class="c-chev">›</td></tr>';
   if(!open) return main;
-  const items=(o.items||[]).map(it=>'<div class="item"><div>'+it[0]+'<div class="isub">'+fmtN(it[2])+' ₽ × '+it[1]+' шт</div></div><div class="mono">'+fmtN(it[1]*it[2])+' ₽</div></div>').join('');
-  const b=base(o), disc=o.discount||0, fin=final(o);
-  const totBlock='<div class="tot"><span>Сумма</span><span>'+fmtN(b)+' ₽</span></div>'+
-    (disc>0?'<div class="tot" style="border-top:0;padding-top:3px;font-weight:600;color:#8a5b09"><span>Скидка '+disc+'%</span><span>−'+fmtN(b-fin)+' ₽</span></div>':'')+
-    '<div class="tot"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div>';
-  const sel='<select class="stsel" data-id="'+o.id+'">'+Object.keys(ST).map(s=>'<option value="'+s+'" '+(s===o.status?'selected':'')+'>'+ST[s]+'</option>').join('')+'</select>';
+  const rows=(o.items||[]).map(it=>'<div class="b-row"><span class="b-nm">'+it[0]+' <span class="b-q">× '+it[1]+'</span><span class="b-u">'+fmtN(it[2])+' ₽/шт</span></span><span class="b-s mono">'+fmtN(it[1]*it[2])+' ₽</span></div>').join('');
+  const bs=base(o), disc=o.discount||0, fin=final(o);
+  const tot='<div class="b-tot">'+
+    (disc>0?'<div class="b-tl"><span>Сумма</span><span class="mono">'+fmtN(bs)+' ₽</span></div><div class="b-tl disc"><span>Скидка '+disc+'%</span><span class="mono">−'+fmtN(bs-fin)+' ₽</span></div>':'')+
+    '<div class="b-pay"><span>К оплате</span><span>'+fmtN(fin)+' ₽</span></div></div>';
+  const sel='<select class="stsel" data-id="'+o.id+'">'+Object.keys(ST).map(x=>'<option value="'+x+'" '+(x===o.status?'selected':'')+'>'+ST[x]+'</option>').join('')+'</select>';
   const tel=(o.phone||'').replace(/[^0-9+]/g,'');
-  const kp = kpMail(o);
-  return main+'<tr class="detail"><td colspan="6"><div class="det">'+
-    '<div>'+items+totBlock+'</div>'+
-    '<div class="side">'+
-      '<div><span class="l">Телефон</span><a class="mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
-      '<div><span class="l">Компания</span>'+(o.company||'—')+'</div>'+
-      '<div><span class="l">Комментарий клиента</span>'+(o.comment||'—')+'</div>'+
-      '<div><span class="l">Скидка на заказ</span><input class="disc-inp" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'"> %</div>'+
-      '<div><span class="l">Статус</span>'+sel+'</div>'+
-      '<div class="det-actions"><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
-    '</div></div></td></tr>';
+  const kp=kpMail(o);
+  return main+'<tr class="detail"><td colspan="6"><div class="b-body">'+
+    '<div class="b-left"><div class="b-h">Состав заказа</div>'+rows+tot+'</div>'+
+    '<div class="b-right">'+
+      '<div class="b-f"><span class="b-l">Телефон</span><a class="b-v mono" href="tel:'+tel+'">'+(o.phone||'—')+'</a></div>'+
+      '<div class="b-f"><span class="b-l">Компания</span><span class="b-v">'+(o.company||'—')+'</span></div>'+
+      '<div class="b-f"><span class="b-l">Комментарий клиента</span><span class="b-v">'+(o.comment||'—')+'</span></div>'+
+      '<div class="b-grid"><div class="b-f"><span class="b-l">Скидка</span><span><input class="disc-inp" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'"> %</span></div>'+
+      '<div class="b-f"><span class="b-l">Статус</span>'+sel+'</div></div>'+
+      '<div class="b-actions"><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
+    '</div>'+
+  '</div></td></tr>';
 }
 function kpMail(o){
   const lines=(o.items||[]).map((it,i)=>(i+1)+'. '+it[0]+' — '+it[1]+' шт × '+fmtN(it[2])+' ₽ = '+fmtN(it[1]*it[2])+' ₽').join('\n');
