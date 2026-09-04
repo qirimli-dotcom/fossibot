@@ -379,7 +379,7 @@ function openBuy(id){
   document.getElementById('buyBody').innerHTML =
     '<div class="br-rates">'+
       
-      '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"><span class="br-tip">≈ 0.011 при 90 ₽/$</span></div>'+
+      '<div class="br-rate"><span class="l">Курс USD, ₽</span><input id="br-rrub" type="number" step="0.01" value="'+(o.rate_rub>0?o.rate_rub:90)+'"><span class="br-tip">сколько ₽ за 1 $</span></div>'+
       '<div class="br-rate"><span class="l">Тариф логистики, $/кг</span><input id="br-tariff" type="number" step="0.01" value="'+(o.logi_tariff||0)+'"></div>'+
     '</div>'+
     '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена USD/шт</th><th>Сумма USD</th><th>Вес/шт, кг</th><th>Общий вес</th><th class="l">Срок производства</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
@@ -391,6 +391,7 @@ function openBuy(id){
       '<div class="br-sr"><span class="k">Логистика, USD</span><span class="v" id="br-logi">—</span></div>'+
       '<div class="br-sr"><span class="k">Иные расходы, USD</span><span class="v" id="br-otherusd">—</span></div>'+
       '<div class="br-sr h"><span class="k">Себестоимость, USD</span><span class="v" id="br-cost">—</span></div>'+
+      '<div class="br-sr"><span class="k">Себестоимость, ₽ (по курсу)</span><span class="v" id="br-costrub">—</span></div>'+
       '<div class="br-sr"><span class="k">Сумма заказа, USD (по курсу)</span><span class="v" id="br-orderusd">—</span></div>'+
       '<div class="br-marg pos" id="br-marg"><span class="k">Маржа</span><span class="v" id="br-margv">—</span></div>'+
     '</div>'+
@@ -407,7 +408,7 @@ function closeBuy(){ document.getElementById('buyOverlay').classList.remove('on'
 function buyCalc(){
   const o = ORDERS.find(x=>String(x.id)===String(buyId)); if(!o) return;
   const items = o.items||[];
-  const rrub = num(document.getElementById('br-rrub').value,0);
+  const rrub = num(document.getElementById('br-rrub').value,0);   // ₽ за 1 $
   const tariff = num(document.getElementById('br-tariff').value,0);
   const other = num(document.getElementById('br-other').value,0);
   let sumUsd=0, weight=0;
@@ -422,7 +423,7 @@ function buyCalc(){
   });
   const logi = tariff*weight;
   const cost = sumUsd + logi + other;
-  const orderUsd = base(o)*rrub;
+  const orderUsd = rrub>0 ? base(o)/rrub : 0;
   const marg = orderUsd - cost;
   const margp = orderUsd>0 ? (marg/orderUsd*100) : 0;
   const usd = n => (Math.round(n)).toLocaleString('ru-RU')+' $';
@@ -431,6 +432,7 @@ function buyCalc(){
   document.getElementById('br-logi').textContent = usd(logi);
   document.getElementById('br-otherusd').textContent = usd(other);
   document.getElementById('br-cost').textContent = usd(cost);
+  document.getElementById('br-costrub').textContent = fmtN(Math.round(cost*rrub))+' ₽';
   document.getElementById('br-orderusd').textContent = usd(orderUsd);
   document.getElementById('br-margv').textContent = (marg>=0?'+':'')+usd(marg)+' · '+margp.toFixed(1)+' %';
   document.getElementById('br-marg').className = 'br-marg '+(marg>=0?'pos':'neg');
