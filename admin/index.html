@@ -140,7 +140,9 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .b-row:last-of-type{border-bottom:0}
 .b-nm{font-weight:600}
 .b-q{font-family:'JetBrains Mono';color:var(--muted);font-weight:400;margin-left:5px}
-.b-u{display:block;font-family:'JetBrains Mono';font-size:11px;color:var(--muted2);font-weight:400;margin-top:2px}
+.b-u{display:block;font-family:'JetBrains Mono';font-size:11px;color:var(--muted2);font-weight:400;margin-top:3px}
+.pu-inp{width:88px;border:1px solid var(--line);border-radius:6px;padding:3px 7px;font-family:'JetBrains Mono';font-weight:600;font-size:12px;color:var(--ink);outline:none}
+.pu-inp:focus{border-color:var(--lime2);background:#fcfef0}
 .b-s{font-family:'Saira';font-weight:700;white-space:nowrap}
 .b-tot{margin-top:10px;padding-top:10px;border-top:2px solid var(--line)}
 .b-tl{display:flex;justify-content:space-between;font-size:13px;padding:2px 0;color:var(--muted)}
@@ -281,6 +283,7 @@ const Store = {
   async setStatus(id,status){ await sb.from('orders').update({status}).eq('id',id); },
   async setDiscount(id,discount){ await sb.from('orders').update({discount}).eq('id',id); },
   async setBuy(id,patch){ await sb.from('orders').update(patch).eq('id',id); },
+  async setItems(id,items,total){ await sb.from('orders').update({items,total}).eq('id',id); },
   async remove(id){ await sb.from('orders').delete().eq('id',id); }
 };
 
@@ -316,6 +319,11 @@ function render(){
   body.querySelectorAll('.order').forEach(tr=>tr.onclick=e=>{ if(e.target.closest('select,a,button,input,textarea'))return; openId=openId===tr.dataset.id?null:tr.dataset.id; render(); });
   body.querySelectorAll('.stsel').forEach(sel=>sel.onchange=async e=>{ e.stopPropagation(); await Store.setStatus(sel.dataset.id,sel.value); const o=ORDERS.find(x=>String(x.id)===sel.dataset.id); if(o)o.status=sel.value; render(); });
   body.querySelectorAll('.disc-inp').forEach(inp=>{ inp.onclick=e=>e.stopPropagation(); inp.onchange=async e=>{ e.stopPropagation(); let v=Math.max(0,Math.min(100,parseInt(inp.value)||0)); await Store.setDiscount(inp.dataset.id,v); const o=ORDERS.find(x=>String(x.id)===inp.dataset.id); if(o)o.discount=v; render(); }; });
+  body.querySelectorAll('.pu-inp').forEach(inp=>{
+    inp.onclick=e=>e.stopPropagation();
+    inp.oninput=e=>{ e.stopPropagation(); const o=ORDERS.find(x=>String(x.id)===inp.dataset.id); if(!o)return; const i=+inp.dataset.i; const p=Math.max(0,parseFloat(inp.value)||0); const el=document.getElementById('pr-sum-'+inp.dataset.id+'-'+i); if(el)el.textContent=fmtN(o.items[i][1]*p)+' ₽'; };
+    inp.onchange=async e=>{ e.stopPropagation(); const o=ORDERS.find(x=>String(x.id)===inp.dataset.id); if(!o)return; const i=+inp.dataset.i; const p=Math.max(0,parseFloat(inp.value)||0); o.items[i][2]=p; o.total=(o.items||[]).reduce((s,it)=>s+it[1]*it[2],0); await Store.setItems(o.id,o.items,o.total); render(); };
+  });
   body.querySelectorAll('.del').forEach(b=>b.onclick=async e=>{ e.stopPropagation(); if(!confirm('Удалить заказ #'+b.dataset.id+'? Действие необратимо.'))return; await Store.remove(b.dataset.id); ORDERS=ORDERS.filter(o=>String(o.id)!==b.dataset.id); openId=null; render(); });
   body.querySelectorAll('.btn-buy').forEach(b=>b.onclick=e=>{ e.stopPropagation(); openBuy(b.dataset.id); });
 }
@@ -329,7 +337,7 @@ function row(o){
     '<td class="c-st"><span class="badge '+o.status+'">'+(ST[o.status]||o.status)+'</span></td>'+
     '<td class="c-chev">›</td></tr>';
   if(!open) return main;
-  const rows=(o.items||[]).map(it=>'<div class="b-row"><span class="b-nm">'+it[0]+' <span class="b-q">× '+it[1]+'</span><span class="b-u">'+fmtN(it[2])+' ₽/шт</span></span><span class="b-s mono">'+fmtN(it[1]*it[2])+' ₽</span></div>').join('');
+  const rows=(o.items||[]).map((it,i)=>'<div class="b-row"><span class="b-nm">'+it[0]+' <span class="b-q">× '+it[1]+'</span><span class="b-u">Цена/шт: <input class="pu-inp" data-id="'+o.id+'" data-i="'+i+'" type="number" min="0" value="'+it[2]+'"> ₽</span></span><span class="b-s mono" id="pr-sum-'+o.id+'-'+i+'">'+fmtN(it[1]*it[2])+' ₽</span></div>').join('');
   const bs=base(o), disc=o.discount||0, fin=final(o);
   const tot='<div class="b-tot">'+
     (disc>0?'<div class="b-tl"><span>Сумма</span><span class="mono">'+fmtN(bs)+' ₽</span></div><div class="b-tl disc"><span>Скидка '+disc+'%</span><span class="mono">−'+fmtN(bs-fin)+' ₽</span></div>':'')+
