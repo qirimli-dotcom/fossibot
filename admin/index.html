@@ -249,7 +249,7 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 
 <div class="app" id="app">
   <div class="topbar"><div class="in">
-    <div class="brand"><span class="mark"></span><span class="name">FOSSi<b>BOT</b></span><span style="font-family:'Saira';font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#c4ccd1;margin-left:8px">&#183; Заказы</span></div>
+    <div class="brand"><span class="mark"></span><span class="name">FOSSi<b>BOT</b></span><span id="buyerToggle" title="" style="font-family:'Saira';font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#c4ccd1;margin-left:8px;cursor:default">&#183; Заказы</span></div>
     <div class="right"><a class="btn btn-line tb-btn" href="../" title="На сайт" aria-label="На сайт"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg><span class="tb-txt">На сайт</span></a><button class="btn btn-line tb-btn" id="reload" title="Обновить" aria-label="Обновить"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg><span class="tb-txt">Обновить</span></button><button class="logout" id="logout" title="Выйти" aria-label="Выйти"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg></button></div>
   </div></div>
   <div class="wrap">
@@ -271,7 +271,9 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 <script>
 const SUPA_URL = 'https://dultytsrfpdfmgtkdizh.supabase.co';
 const SUPA_KEY = 'sb_publishable_u_dnjc10G1tKM6e3KMi7Kg_lr_TRFAP';
-const ADMIN_PASS = 'fossibot';   /* ← ПОМЕНЯЙ пароль на свой */
+const ADMIN_PASS = 'fossibot';   /* ← основной пароль (заказы) */
+const BUYER_PASS = 'fossibot2026'; /* ← пароль закупки (кнопки «Закупка») */
+let buyerOn = false;
 const sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
 const ST = {new:'Новый', work:'В работе', avail:'Доступно к заказу', transit:'В пути', done:'Выдан', cancel:'Отменён'};
@@ -353,7 +355,7 @@ function row(o){
       '<div class="b-f"><span class="b-l">Комментарий клиента</span><span class="b-v">'+(o.comment||'—')+'</span></div>'+
       '<div class="b-grid"><div class="b-f"><span class="b-l">Скидка</span><span><input class="disc-inp" data-id="'+o.id+'" type="number" min="0" max="100" value="'+disc+'"> %</span></div>'+
       '<div class="b-f"><span class="b-l">Статус</span>'+sel+'</div></div>'+
-      '<div class="b-actions"><button class="btn btn-buy" data-id="'+o.id+'">Закупка</button><a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
+      '<div class="b-actions">'+(buyerOn?'<button class="btn btn-buy" data-id="'+o.id+'">Закупка</button>':'')+'<a class="btn btn-line" href="'+kp+'">Отправить КП</a><button class="del" data-id="'+o.id+'">Удалить</button></div>'+
     '</div>'+
   '</div></td></tr>';
 }
@@ -490,6 +492,14 @@ document.getElementById('loginBtn').onclick=doLogin;
 document.getElementById('pass').addEventListener('keydown',e=>{ if(e.key==='Enter')doLogin(); });
 document.getElementById('logout').onclick=()=>{ document.getElementById('app').style.display='none'; document.getElementById('login').style.display='flex'; document.getElementById('pass').value=''; };
 document.getElementById('reload').onclick=load;
+(function(){
+  const t=document.getElementById('buyerToggle'); if(!t) return;
+  t.addEventListener('dblclick',function(){
+    if(buyerOn){ buyerOn=false; render(); return; }
+    const pw=prompt('Пароль закупки:'); if(pw===null) return;
+    if(pw===BUYER_PASS){ buyerOn=true; render(); } else { alert('Неверный пароль закупки'); }
+  });
+})();
 document.getElementById('search').addEventListener('input',e=>{q=e.target.value;render();});
 document.addEventListener('click',()=>{const m=document.getElementById('fddMenu'); if(m)m.classList.remove('open');});
 </script>
