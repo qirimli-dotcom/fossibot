@@ -225,6 +225,8 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 .cart-empty{padding:48px 12px;text-align:center;color:var(--muted);font-size:14px;line-height:1.5}
 .cart-foot{border-top:1px solid var(--line);padding:16px 20px;display:flex;flex-direction:column;gap:11px}
 .cart-total{font-size:13px;color:var(--muted)}
+.cart-grand{font-family:'Saira',sans-serif;font-weight:700;font-size:19px;color:var(--ink);margin:-2px 0 2px}
+.cart-grand b{color:var(--ink)}
 .cart-total b{color:var(--ink)}
 .cart-foot .btn-lime{justify-content:center;width:100%}
 .cart-clear{background:none;border:0;color:var(--muted2);font-size:13px;cursor:pointer;text-decoration:underline;align-self:center}
@@ -393,6 +395,9 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
   .mm-t{min-width:440px}
   .mm-costs{gap:12px}
 }
+.admin-link{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;color:#59636a;border:1px solid #2c3439;flex:none;transition:color .16s,border-color .16s,background .16s}
+.admin-link:hover{color:var(--lime);border-color:#3a444b;background:#20272c}
+.foot-brand{cursor:default}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- Yandex.Metrika counter -->
@@ -480,7 +485,7 @@ select.sort{font-family:'Inter';font-size:13px;color:var(--ink);background:var(-
 <footer class="foot" id="contacts">
   <div class="wrap">
     <div class="col">
-      <a class="brand" href="#top"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></a>
+      <span class="brand foot-brand" id="footBrand" title="FOSSiBOT"><img class="logo" src="img/logo.png" alt="FOSSiBOT"></span>
       <p style="margin-top:14px;max-width:34ch">Оптовые поставки электростанций и солнечных панелей FOSSiBOT. B2B — дилерам, интернет-магазинам и монтажным компаниям.</p>
     </div>
     <div class="col">
@@ -761,6 +766,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 let cart = {};   // корзина живёт только в рамках сессии — при F5 обнуляется
 function saveCart(){}   // намеренно не сохраняем: корзина сбрасывается при обновлении
 function cartCount(){ return Object.values(cart).reduce((a,b)=>a+b,0); }
+function cartTotal(){ return Object.keys(cart).reduce((s,id)=>{ const pr=parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))||0; return s+pr*cart[id]; },0); }
+function priced(){ return Object.keys(cart).every(id=>((PRICES[id]||'').replace(/[^0-9]/g,''))!==''  && parseInt((PRICES[id]||'0').replace(/[^0-9]/g,''))>0); }
 let pendingId = null;
 function addToCart(id){
   pendingId = id;
@@ -867,6 +874,7 @@ function renderCartBody(){
   const mail = `mailto:${ORDER_EMAIL}?subject=${encodeURIComponent('Заявка FOSSiBOT')}&body=${encodeURIComponent(body_txt)}`;
   foot.innerHTML = `
     <div class="cart-total">Позиций: <b>${ids.length}</b> · всего <b>${cartCount()} шт</b></div>
+    ${cartTotal()>0 ? `<div class="cart-grand">Итого: <b>${cartTotal().toLocaleString('ru-RU')} ₽</b></div>` : ''}
     <button class="btn btn-lime" id="cartOrder">Оформить заказ</button>
     <button class="btn btn-line" id="cartPdf">Скачать PDF</button>
     <button class="cart-clear" id="cartClear">Очистить корзину</button>`;
@@ -981,6 +989,7 @@ async function submitOrder(){
 })();
 
 buildFilters(); render(); updateCart();
+var _fb=document.getElementById('footBrand'); if(_fb) _fb.addEventListener('click',function(){ location.href='admin/'; });
 window.addEventListener('load', function(){
   if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
   window.scrollTo(0,0);
