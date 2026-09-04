@@ -366,28 +366,27 @@ function openBuy(id){
   buyId = String(id);
   document.getElementById('buyMeta').textContent = 'Заказ #'+o.id+' · '+(o.company||o.name||'')+' · '+fmtN(base(o))+' ₽';
   const items = o.items||[];
-  const buyCny = Array.isArray(o.buy_cny)?o.buy_cny:[];
+  const buyUsd = Array.isArray(o.buy_cny)?o.buy_cny:[];  // храним в том же поле, теперь это USD
   const wts = Array.isArray(o.weights)?o.weights:[];
   const trm = Array.isArray(o.terms)?o.terms:[];
   const rows = items.map((it,i)=>'<tr>'+
     '<td class="l">'+it[0]+'</td><td>'+it[1]+'</td>'+
-    '<td><input class="br-inp" data-k="cny" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(buyCny[i]||0)+'"></td>'+
+    '<td><input class="br-inp" data-k="cny" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(buyUsd[i]||0)+'"></td>'+
     '<td id="br-scny-'+i+'">—</td>'+
     '<td><input class="br-inp" data-k="w" data-i="'+i+'" type="number" min="0" step="0.01" value="'+(wts[i]||0)+'"></td>'+
     '<td id="br-tw-'+i+'">—</td>'+
     '<td class="l"><input class="br-term" data-k="term" data-i="'+i+'" type="text" placeholder="сток / до 16 янв" value="'+((trm[i]||'').replace(/"/g,'&quot;'))+'"></td></tr>').join('');
   document.getElementById('buyBody').innerHTML =
     '<div class="br-rates">'+
-      '<div class="br-rate"><span class="l">Курс CNY→USD</span><input id="br-rcny" type="number" step="0.0001" value="'+(o.rate_cny||0.14)+'"><span class="br-tip">1 ¥ ≈ 0.14 $</span></div>'+
+      
       '<div class="br-rate"><span class="l">Курс RUB→USD</span><input id="br-rrub" type="number" step="0.0001" value="'+(o.rate_rub||0.011)+'"><span class="br-tip">≈ 0.011 при 90 ₽/$</span></div>'+
       '<div class="br-rate"><span class="l">Тариф логистики, $/кг</span><input id="br-tariff" type="number" step="0.01" value="'+(o.logi_tariff||0)+'"></div>'+
     '</div>'+
-    '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена CNY</th><th>Сумма CNY</th><th>Вес/шт, кг</th><th>Общий вес</th><th class="l">Срок производства</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="br-scroll"><table class="br-t"><thead><tr><th class="l">Наименование</th><th>Кол-во</th><th>Цена USD/шт</th><th>Сумма USD</th><th>Вес/шт, кг</th><th>Общий вес</th><th class="l">Срок производства</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div class="br-costs"><label>Иные расходы, $ <input class="br-inp" id="br-other" type="number" min="0" step="0.01" value="'+(o.other_usd||0)+'"></label></div>'+
     '<span class="br-note-l">Комментарий к закупке</span><textarea class="br-note" id="br-note" rows="2" placeholder="Поставщик, сток, сроки, трек…">'+(o.pcomment||'')+'</textarea>'+
     '<div class="br-sum">'+
-      '<div class="br-sr"><span class="k">Итого сумма, CNY</span><span class="v" id="br-sumcny">—</span></div>'+
-      '<div class="br-sr"><span class="k">Итого сумма, USD</span><span class="v" id="br-sumusd">—</span></div>'+
+      '<div class="br-sr"><span class="k">Закупка (товар), USD</span><span class="v" id="br-sumusd">—</span></div>'+
       '<div class="br-sr"><span class="k">Итого вес</span><span class="v" id="br-weight">—</span></div>'+
       '<div class="br-sr"><span class="k">Логистика, USD</span><span class="v" id="br-logi">—</span></div>'+
       '<div class="br-sr"><span class="k">Иные расходы, USD</span><span class="v" id="br-otherusd">—</span></div>'+
@@ -408,27 +407,25 @@ function closeBuy(){ document.getElementById('buyOverlay').classList.remove('on'
 function buyCalc(){
   const o = ORDERS.find(x=>String(x.id)===String(buyId)); if(!o) return;
   const items = o.items||[];
-  const rcny = num(document.getElementById('br-rcny').value,0);
   const rrub = num(document.getElementById('br-rrub').value,0);
   const tariff = num(document.getElementById('br-tariff').value,0);
   const other = num(document.getElementById('br-other').value,0);
-  let sumCny=0, weight=0;
+  let sumUsd=0, weight=0;
+  const usd0 = n => (Math.round(n)).toLocaleString('ru-RU')+' $';
   items.forEach((it,i)=>{
-    const cny = num(document.querySelector('.br-inp[data-k="cny"][data-i="'+i+'"]').value,0);
-    const w   = num(document.querySelector('.br-inp[data-k="w"][data-i="'+i+'"]').value,0);
-    const scny = cny*it[1]; const tw = w*it[1];
-    sumCny += scny; weight += tw;
-    document.getElementById('br-scny-'+i).textContent = fmtN(scny)+' ¥';
+    const pu = num(document.querySelector('.br-inp[data-k="cny"][data-i="'+i+'"]').value,0);
+    const w  = num(document.querySelector('.br-inp[data-k="w"][data-i="'+i+'"]').value,0);
+    const su = pu*it[1]; const tw = w*it[1];
+    sumUsd += su; weight += tw;
+    document.getElementById('br-scny-'+i).textContent = usd0(su);
     document.getElementById('br-tw-'+i).textContent = (Math.round(tw*100)/100)+' кг';
   });
-  const sumUsd = sumCny*rcny;
   const logi = tariff*weight;
   const cost = sumUsd + logi + other;
   const orderUsd = base(o)*rrub;
   const marg = orderUsd - cost;
   const margp = orderUsd>0 ? (marg/orderUsd*100) : 0;
   const usd = n => (Math.round(n)).toLocaleString('ru-RU')+' $';
-  document.getElementById('br-sumcny').textContent = fmtN(sumCny)+' ¥';
   document.getElementById('br-sumusd').textContent = usd(sumUsd);
   document.getElementById('br-weight').textContent = (Math.round(weight*100)/100)+' кг';
   document.getElementById('br-logi').textContent = usd(logi);
@@ -447,7 +444,6 @@ async function buySave(){
   const terms = items.map((it,i)=>{ const el=document.querySelector('.br-term[data-i="'+i+'"]'); return el?el.value:''; });
   const patch = {
     buy_cny, weights, terms,
-    rate_cny: num(document.getElementById('br-rcny').value,0),
     rate_rub: num(document.getElementById('br-rrub').value,0),
     logi_tariff: num(document.getElementById('br-tariff').value,0),
     other_usd: num(document.getElementById('br-other').value,0),
