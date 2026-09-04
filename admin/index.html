@@ -219,7 +219,9 @@ tbody td{padding:12px 16px;border-bottom:1px solid var(--line2);vertical-align:m
 .br-marg{margin-top:12px;border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
 .br-marg.pos{background:var(--lime);color:var(--ink)}.br-marg.neg{background:#ff7a6b;color:#3a0f0a}
 .br-marg .k{font-family:'Saira';font-weight:700;text-transform:uppercase;font-size:14px}
-.br-marg .v{font-family:'Saira';font-weight:800;font-size:19px}
+.br-marg .mv{text-align:right;line-height:1.15}
+.br-marg .v{font-family:'Saira';font-weight:800;font-size:19px;display:block}
+.br-marg .vr{font-family:'JetBrains Mono';font-weight:700;font-size:13px;opacity:.85;display:block;margin-top:2px}
 .br-save{margin-top:14px;display:flex;gap:8px;align-items:center}
 .br-saved{color:#1c7a44;font-size:12.5px;font-weight:600}
 .btn-buy{background:var(--graphite);color:#fff;border-color:var(--graphite)}
@@ -393,7 +395,8 @@ function openBuy(id){
       '<div class="br-sr h"><span class="k">Себестоимость, USD</span><span class="v" id="br-cost">—</span></div>'+
       '<div class="br-sr"><span class="k">Себестоимость, ₽ (по курсу)</span><span class="v" id="br-costrub">—</span></div>'+
       '<div class="br-sr"><span class="k">Сумма заказа, USD (по курсу)</span><span class="v" id="br-orderusd">—</span></div>'+
-      '<div class="br-marg pos" id="br-marg"><span class="k">Маржа</span><span class="v" id="br-margv">—</span></div>'+
+      '<div class="br-sr"><span class="k">Сумма заказа, ₽</span><span class="v" id="br-orderrub">—</span></div>'+
+      '<div class="br-marg pos" id="br-marg"><span class="k">Маржа</span><span class="mv"><span class="v" id="br-margv">—</span><span class="vr" id="br-margrub">—</span></span></div>'+
     '</div>'+
     '<div class="br-save"><button class="btn btn-lime" id="br-savebtn">Сохранить</button><button class="btn btn-line" id="br-closebtn">Закрыть</button><span class="br-saved" id="br-savedmsg"></span></div>';
   // wire inputs
@@ -435,6 +438,9 @@ function buyCalc(){
   document.getElementById('br-costrub').textContent = fmtN(Math.round(cost*rrub))+' ₽';
   document.getElementById('br-orderusd').textContent = usd(orderUsd);
   document.getElementById('br-margv').textContent = (marg>=0?'+':'')+usd(marg)+' · '+margp.toFixed(1)+' %';
+  document.getElementById('br-orderrub').textContent = fmtN(Math.round(base(o)))+' ₽';
+  const margRub = marg*rrub;
+  document.getElementById('br-margrub').textContent = (margRub>=0?'+':'')+fmtN(Math.round(margRub))+' ₽';
   document.getElementById('br-marg').className = 'br-marg '+(marg>=0?'pos':'neg');
   const sv=document.getElementById('br-savedmsg'); if(sv) sv.textContent='';
 }
